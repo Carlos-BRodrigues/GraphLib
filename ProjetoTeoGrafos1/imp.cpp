@@ -7,48 +7,108 @@
 
 namespace graph_tools_lib {
 
-// The constructor's job is to call the parser to set up the object.
-Graph::Graph(const std::string& filename) {
-    parseFile(filename);
+// --- MUDANÇA 1: Implementação da AdjacencyList ---
+AdjacencyList::AdjacencyList(int num_vertices) : num_vertices_(num_vertices), num_edges_(0) {
+    adj_list_.assign(num_vertices, std::vector<int>());
 }
 
-// Private helper to populate the object's member variables.
-void Graph::parseFile(const std::string& filename) {
+void AdjacencyList::addEdge(int u, int v) {
+    adj_list_[u].push_back(v+1);
+    adj_list_[v].push_back(u+1);
+    num_edges_++;
+}
+
+int AdjacencyList::getVertexCount() const { return num_vertices_; }
+
+int AdjacencyList::getEdgeCount() const { return num_edges_; }
+
+int AdjacencyList::getDegree(int v) const { return adj_list_[v].size(); }
+
+void AdjacencyList::print() const {
+
+    for (int i = 0; i<this->getVertexCount(); i++){
+        std::cout<<i+1<<" => ";
+        for(int j=0; j<this->getDegree(i); j++){
+            std::cout<<adj_list_[i][j]<<' ';
+        }
+        std::cout<<std::endl;
+    }
+
+ }
+
+
+// --- MUDANÇA 2: Implementação da AdjacencyMatrix ---
+AdjacencyMatrix::AdjacencyMatrix(int num_vertices) : num_vertices_(num_vertices), num_edges_(0) {
+    adj_matrix_.assign(num_vertices, std::vector<int>(num_vertices, 0));
+}
+
+void AdjacencyMatrix::addEdge(int u, int v) {
+    if (adj_matrix_[u][v] == 0) { // Evita contar arestas duplicadas
+        num_edges_++;
+    }
+    adj_matrix_[u][v] = 1;
+    adj_matrix_[v][u] = 1;
+}
+
+int AdjacencyMatrix::getVertexCount() const { return num_vertices_; }
+
+int AdjacencyMatrix::getEdgeCount() const { return num_edges_; }
+
+int AdjacencyMatrix::getDegree(int v) const {
+    return std::accumulate(adj_matrix_[v].begin(), adj_matrix_[v].end(), 0);
+}
+
+void AdjacencyMatrix::print() const { 
+
+    for (int i = 0; i<this->getVertexCount(); i++){
+        std::cout<<i+1<<" => ";
+        for(int j=0; j<this->getVertexCount(); j++){
+            if(adj_matrix_[i][j]==1){
+                std::cout<<j+1<<' ';
+            }
+        }
+        std::cout<<std::endl;
+    }
+    
+ }
+
+
+// --- MUDANÇA 3: Refatoração do Construtor e Métodos da Graph ---
+
+// O construtor agora é uma "fábrica" que constrói a representação correta.
+Graph::Graph(const std::string& filename, RepresentationType type) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Error: Could not open file " + filename);
     }
+    
+    int num_vertices;
+    file >> num_vertices;
 
-    // 1. Read ONLY the number of vertices from the first line.
-    file >> this->num_vertices_;
-    this->num_edges_ = 0; // Initialize edge count to zero.
-
-    // 2. Initialize the adjacency list to the correct size.
-    this->adj_list_.assign(num_vertices_, std::vector<int>());
+    if (type == RepresentationType::ADJACENCY_LIST) {
+        representation_ = std::make_unique<AdjacencyList>(num_vertices);
+    } else { // ADJACENCY_MATRIX
+        representation_ = std::make_unique<AdjacencyMatrix>(num_vertices);
+    }
 
     int node1, node2;
-    // 3. Loop until the end of the file, reading each edge.
     while (file >> node1 >> node2) {
-        // Store as 0-based indices.
-        // Also, add checks to prevent crashing if the file contains invalid vertex numbers.
-        if (node1 > 0 && node1 <= num_vertices_ && node2 > 0 && node2 <= num_vertices_) {
-            adj_list_[node1 - 1].push_back(node2 - 1);
-            adj_list_[node2 - 1].push_back(node1 - 1);
-            this->num_edges_++; // Increment the edge count for each valid edge read.
-        }
+        representation_->addEdge(node1 - 1, node2 - 1); // Delega a adição da aresta
     }
     file.close();
 }
 
-// 'getDegreeStats' is now a member function. It's 'const' because it only reads member data.
+// Os métodos da Graph agora simplesmente delegam as chamadas.
 std::vector<double> Graph::getDegreeStats() const {
+    int n = representation_->getVertexCount();
     std::vector<double> degrees;
-    degrees.reserve(this->num_vertices_);
-    for (const auto& neighbors : this->adj_list_) {
-        degrees.push_back(neighbors.size());
+    degrees.reserve(n);
+    for (int i = 0; i < n; ++i) {
+        degrees.push_back(representation_->getDegree(i));
     }
+    // ... o resto da lógica (min, max, media, etc.) permanece o mesmo ...
 
-    if (degrees.empty()) {
+     if (degrees.empty()) {
         return {0, 0, 0, 0}; // Return zero for all stats if graph is empty.
     }
     
@@ -60,17 +120,22 @@ std::vector<double> Graph::getDegreeStats() const {
     std::sort(degrees.begin(), degrees.end());
     
     double median_degree;
-    auto n = degrees.size();
-    if (n % 2 == 1) {
-        median_degree = degrees[n / 2];
+    auto n2 = degrees.size();
+    if (n2 % 2 == 1) {
+        median_degree = degrees[n2 / 2];
     } else {
-        median_degree = (degrees[n / 2 - 1] + degrees[n / 2]) / 2.0;
+        median_degree = (degrees[n2 / 2 - 1] + degrees[n2 / 2]) / 2.0;
     }
     
     return {min_degree, max_degree, mean_degree, median_degree};
 }
 
-// This function now has a single responsibility: writing output.
+
+void Graph::print() const {
+    // A classe Graph não precisa saber como imprimir, ela apenas pede!
+    representation_->print();
+}
+
 bool Graph::writeResults(const std::string& output_filename) const {
     std::ofstream output_file(output_filename);
     if (!output_file.is_open()) {
@@ -78,8 +143,8 @@ bool Graph::writeResults(const std::string& output_filename) const {
         return false;
     }
     
-    output_file << "Number of vertices: " << this->num_vertices_ << std::endl;
-    output_file << "Number of edges: " << this->num_edges_ << std::endl;
+    output_file << "Number of vertices: " << representation_->getVertexCount() << std::endl;
+    output_file << "Number of edges: " << representation_->getEdgeCount() << std::endl;
     
     std::vector<double> stats = this->getDegreeStats();
     output_file << "Min degree: " << stats[0] << std::endl;
@@ -91,24 +156,4 @@ bool Graph::writeResults(const std::string& output_filename) const {
     return true;
 }
 
-    void Graph::print() const {
-    std::cout << "Graph Adjacency List:" << std::endl;
-    std::cout << "Vertices: " << this->num_vertices_ << std::endl;
-    std::cout << "Edges: " << this->num_edges_ << std::endl;
-    std::cout << "--------------------" << std::endl;
-
-    // Loop through each vertex from 0 to num_vertices_ - 1
-    for (int i = 0; i < this->num_vertices_; ++i) {
-        // We print the vertex number (i + 1 for 1-based display)
-        std::cout << i + 1 << " => ";
-
-        // Directly access the vector of neighbors for the current vertex 'i'
-        for (int neighbor : this->adj_list_[i]) {
-            // We print each neighbor (neighbor + 1 for 1-based display)
-            std::cout << neighbor + 1 << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-} // namespace graph_tools_lib
+} // namespace

@@ -3,34 +3,79 @@
 
 #include <string>
 #include <vector>
+#include <memory> // ESSENCIAL: para std::unique_ptr
 
 namespace graph_tools_lib {
 
-class Graph {
+// MUDANÇA 1: Adicionar um enum para a escolha do usuário
+enum class RepresentationType {
+    ADJACENCY_LIST,
+    ADJACENCY_MATRIX
+};
+
+// MUDANÇA 2: Definir a interface abstrata (o blueprint)
+class IGraphRepresentation {
 public:
-    // Constructor: Creates and initializes a Graph object directly from a file.
-    explicit Graph(const std::string& filename);
+    virtual ~IGraphRepresentation() = default;
+    virtual void addEdge(int u, int v) = 0;
+    virtual int getVertexCount() const = 0;
+    virtual int getEdgeCount() const = 0;
+    virtual int getDegree(int v) const = 0;
+    virtual void print() const = 0;
+    // Adicione outras funções essenciais aqui se precisar (ex: getNeighbors)
+};
 
-    // Member function to get degree statistics.
-    // 'const' promises this function won't change the graph.
-    std::vector<double> getDegreeStats() const;
-
-    // Member function to write the results to a file.
-    bool writeResults(const std::string& output_filename) const;
-
-    void print() const;
-
+// MUDANÇA 3: Declarar as classes concretas que implementam a interface
+class AdjacencyList : public IGraphRepresentation {
 private:
-    // Private member variables to STORE the graph's data.
-    // The trailing underscore is a common convention for private members.
     int num_vertices_;
     int num_edges_;
     std::vector<std::vector<int>> adj_list_;
-
-    // A private helper function to do the actual file parsing.
-    void parseFile(const std::string& filename);
+public:
+    AdjacencyList(int num_vertices);
+    void addEdge(int u, int v) override;
+    int getVertexCount() const override;
+    int getEdgeCount() const override;
+    int getDegree(int v) const override;
+    void print() const override;
 };
 
-} // namespace graph_tools_lib
+class AdjacencyMatrix : public IGraphRepresentation {
+private:
+    int num_vertices_;
+    int num_edges_;
+    std::vector<std::vector<int>> adj_matrix_;
+public:
+    AdjacencyMatrix(int num_vertices);
+    void addEdge(int u, int v) override;
+    int getVertexCount() const override;
+    int getEdgeCount() const override;
+    int getDegree(int v) const override;
+    void print() const override;
+};
 
-#endif // GRAPH_TOOLS_HPP
+
+// MUDANÇA 4: Simplificar drasticamente a classe Graph
+class Graph {
+public:
+    // O construtor agora aceita a escolha do tipo
+    Graph(const std::string& filename, RepresentationType type);
+
+    // As funções públicas não mudam para o usuário!
+    std::vector<double> getDegreeStats() const;
+    bool writeResults(const std::string& output_filename) const;
+    void print() const;
+
+private:
+    // REMOVER os membros antigos:
+    // int num_vertices_;
+    // int num_edges_;
+    // std::vector<std::vector<int>> adj_list_;
+
+    // ADICIONAR um único ponteiro inteligente para a representação
+    std::unique_ptr<IGraphRepresentation> representation_;
+};
+
+} // namespace
+
+#endif

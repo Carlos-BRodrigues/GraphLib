@@ -1,0 +1,6 @@
+Number of vertices: 4
+Number of edges: 3
+Min degree: 1
+Max degree: 3
+Mean degree: 1.5
+Median degree: 1

@@ -1,20 +1,27 @@
-#include <iostream>
-#include <vector>
 #include "graph_tools.hpp"
+#include <iostream>
 
 int main() {
-    std::cout << "--- Program Started ---" << std::endl; // <-- ADD THIS
-
     try {
-        graph_tools_lib::Graph my_graph("test.txt");
-        my_graph.print();
-        my_graph.writeResults("saida.txt");
+        std::cout << "--- Testando a representacao com LISTA DE ADJACENCIA ---" << std::endl;
+        // O usuário escolhe a representação aqui
+        graph_tools_lib::Graph graph_list("test2.txt", graph_tools_lib::RepresentationType::ADJACENCY_LIST);
+        
+        // E usa o objeto Graph normalmente, sem se preocupar com os detalhes
+        graph_list.print();
+        graph_list.writeResults("saida2.txt");
+        //std::vector<double> stats_list = graph_list.getDegreeStats();
+        //...
+
+        std::cout << "\n--- Testando a representacao com MATRIZ DE ADJACENCIA ---" << std::endl;
+        // O usuário pode criar outro grafo com a outra representação
+        graph_tools_lib::Graph graph_matrix("test.txt", graph_tools_lib::RepresentationType::ADJACENCY_MATRIX);
+        graph_matrix.print();
+        graph_matrix.writeResults("saida.txt");
 
     } catch (const std::exception& e) {
-        std::cerr << "An error occurred: " << e.what() << std::endl;
+        std::cerr << "Ocorreu um erro: " << e.what() << std::endl;
         return 1;
     }
-
-    std::cout << "--- Program Finished ---" << std::endl; // <-- AND THIS
     return 0;
 }
