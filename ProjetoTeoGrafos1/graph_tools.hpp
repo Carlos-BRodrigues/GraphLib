@@ -21,6 +21,15 @@ public:
     virtual int getVertexCount() const = 0;
     virtual int getEdgeCount() const = 0;
     virtual int getDegree(int v) const = 0;
+    
+    // Novas declarações de métodos de busca
+    virtual void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const = 0;
+    virtual void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const = 0;
+    
+    // Novos métodos para diâmetro e componentes
+    virtual int getDistance(int u, int v) const = 0;
+    virtual int getDiameter() const = 0;
+    virtual std::vector<std::vector<int>> getConnectedComponents() const = 0;
     virtual void print() const = 0;
     // Adicione outras funções essenciais aqui se precisar (ex: getNeighbors)
 };
@@ -37,6 +46,13 @@ public:
     int getVertexCount() const override;
     int getEdgeCount() const override;
     int getDegree(int v) const override;
+    void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
+    void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
+    
+    // Novos métodos para diâmetro e componentes
+    int getDistance(int u, int v) const override;
+    int getDiameter() const override;
+    std::vector<std::vector<int>> getConnectedComponents() const override;
     void print() const override;
 };
 
@@ -51,6 +67,14 @@ public:
     int getVertexCount() const override;
     int getEdgeCount() const override;
     int getDegree(int v) const override;
+    
+    void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
+    void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
+    
+    // Novos métodos para diâmetro e componentes
+    int getDistance(int u, int v) const override;
+    int getDiameter() const override;
+    std::vector<std::vector<int>> getConnectedComponents() const override;
     void print() const override;
 };
 
@@ -64,8 +88,14 @@ public:
     // As funções públicas não mudam para o usuário!
     std::vector<double> getDegreeStats() const;
     bool writeResults(const std::string& output_filename) const;
+    void BFS(int start_node, const std::string& output_file) const;
+    void DFS(int start_node, const std::string& output_file) const;
+    void writeSearchTree(const std::string& output_file, const std::string& algorithm, int start_node, const std::vector<int>& parent, const std::vector<int>& level) const;
+    int getDistance(int u, int v) const;
+    int getDiameter() const;
+    std::vector<std::vector<int>> getConnectedComponents() const;
+    bool writeConnectedComponents(const std::string& output_filename) const;
     void print() const;
-
 private:
     // REMOVER os membros antigos:
     // int num_vertices_;
