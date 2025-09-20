@@ -1,22 +1,24 @@
-Número de vértices: 4
-Número de arestas: 3
+Número de vértices: 5
+Número de arestas: 5
 Grau mínimo: 1
-Grau máximo: 3
-Grau médio: 1.5
-Grau mediano: 1
+Grau máximo: 4
+Grau médio: 2
+Grau mediano: 2
 
 --- Resultados da Busca em Largura (BFS) a partir do vertice 1 ---
 Vertice: 1, Pai: Nenhum, Nivel: 0
-Vertice: 2, Pai: 3, Nivel: 2
-Vertice: 3, Pai: 1, Nivel: 1
-Vertice: 4, Pai: 3, Nivel: 2
+Vertice: 2, Pai: 1, Nivel: 1
+Vertice: 3, Pai: 5, Nivel: 2
+Vertice: 4, Pai: 5, Nivel: 2
+Vertice: 5, Pai: 1, Nivel: 1
 
 --- Resultados da Busca em Profundidade (DFS) a partir do vertice 1 ---
 Vertice: 1, Pai: Nenhum, Nivel: 0
-Vertice: 2, Pai: 3, Nivel: 2
-Vertice: 3, Pai: 1, Nivel: 1
-Vertice: 4, Pai: 3, Nivel: 2
+Vertice: 2, Pai: 1, Nivel: 1
+Vertice: 3, Pai: 5, Nivel: 2
+Vertice: 4, Pai: 5, Nivel: 2
+Vertice: 5, Pai: 1, Nivel: 1
 
 --- Componentes Conexas ---
 Numero de componentes: 1
-Tamanho: 4 | Vertices: 1 3 2 4 
+Tamanho: 5 | Vertices: 1 2 5 3 4 

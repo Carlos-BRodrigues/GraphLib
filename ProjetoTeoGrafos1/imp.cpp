@@ -15,8 +15,8 @@ AdjacencyList::AdjacencyList(int num_vertices) : num_vertices_(num_vertices), nu
 }
 
 void AdjacencyList::addEdge(int u, int v) { //Adiciona aresta
-    adj_list_[u].push_back(v+1);
-    adj_list_[v].push_back(u+1);
+    adj_list_[u].push_back(v);
+    adj_list_[v].push_back(u);
     num_edges_++;
 }
 
@@ -43,7 +43,7 @@ void AdjacencyList::BFS(int start_node, std::vector<int>& parent, std::vector<in
         q.pop();
 
         for (int v : adj_list_[u]) {
-            int v_idx = v - 1;
+            int v_idx = v;
             if (!visited[v_idx]) {
                 visited[v_idx] = true;
                 parent[v_idx] = u;
@@ -76,7 +76,7 @@ void AdjacencyList::DFS(int start_node, std::vector<int>& parent, std::vector<in
         //Percorre os vizinhos em ordem inversa para que a ordem de visitação
         //seja a mesma da implementação recursiva (depende da ordem de inserção)
         for (auto it = adj_list_[u].rbegin(); it != adj_list_[u].rend(); ++it) {
-            int v_idx = (*it) - 1;
+            int v_idx = (*it);
             if (!visited[v_idx]) {
                 visited[v_idx] = true;
                 parent[v_idx] = u;
@@ -85,6 +85,66 @@ void AdjacencyList::DFS(int start_node, std::vector<int>& parent, std::vector<in
             }
         }
     }
+}
+
+SearchResult AdjacencyList::bfs(int start_node) const {
+    //bfs e dfs pura para testes
+    SearchResult result;
+    result.parent.assign(num_vertices_, -1);
+    result.distance.assign(num_vertices_, -1);
+
+    std::queue<int> q;
+    std::vector<bool> visited(num_vertices_, false);
+    
+    result.distance[start_node] = 0;
+    visited[start_node] = true;
+    q.push(start_node);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v : adj_list_[u]) {
+            int v_idx = v;
+            if (!visited[v_idx]) {
+                visited[v_idx] = true;
+                result.parent[v_idx] = u;
+                result.distance[v_idx] = result.distance[u] + 1;
+                q.push(v_idx);
+            }
+        }
+    }
+    // No final, retorne o objeto de resultado preenchido.
+    return result;
+}
+
+SearchResult AdjacencyList::dfs(int start_node) const {
+    SearchResult result;
+    result.parent.assign(num_vertices_, -1);
+    result.distance.assign(num_vertices_, -1);
+    
+    std::vector<bool> visited(num_vertices_, false);
+    std::stack<int> s;
+
+    s.push(start_node);
+    visited[start_node] = true;
+    result.distance[start_node] = 0;
+    
+    while (!s.empty()) {
+        int u = s.top();
+        s.pop();
+
+        for (auto it = adj_list_[u].rbegin(); it != adj_list_[u].rend(); ++it) {
+            int v_idx = (*it);
+            if (!visited[v_idx]) {
+                visited[v_idx] = true;
+                result.parent[v_idx] = u;
+                result.distance[v_idx] = result.distance[u] + 1;
+                s.push(v_idx);
+            }
+        }
+    }
+    return result;
 }
 
 int AdjacencyList::getDistance(int u, int v) const { //Distância entre dois vértices arbitrários
@@ -124,7 +184,7 @@ std::vector<std::vector<int>> AdjacencyList::getConnectedComponents() const { //
                 current_component.push_back(u + 1);
                 
                 for (int v : adj_list_[u]) {
-                    int v_idx = v - 1;
+                    int v_idx = v;
                     if (!visited[v_idx]) {
                         visited[v_idx] = true;
                         q.push(v_idx);
@@ -147,7 +207,7 @@ void AdjacencyList::print() const {
     for (int i = 0; i<this->getVertexCount(); i++){
         std::cout<<i+1<<" => ";
         for(int j=0; j<this->getDegree(i); j++){
-            std::cout<<adj_list_[i][j]<<' ';
+            std::cout<<adj_list_[i][j]+1<<' ';
         }
         std::cout<<std::endl;
     }
@@ -174,6 +234,62 @@ int AdjacencyMatrix::getEdgeCount() const { return num_edges_; }
 
 int AdjacencyMatrix::getDegree(int v) const {
     return std::accumulate(adj_matrix_[v].begin(), adj_matrix_[v].end(), 0);
+}
+
+SearchResult AdjacencyMatrix::bfs(int start_node) const {
+    //bfs e dfs pura para testes
+    SearchResult result;
+    result.parent.assign(num_vertices_, -1);
+    result.distance.assign(num_vertices_, -1);
+
+    std::queue<int> q;
+    std::vector<bool> visited(num_vertices_, false);
+    
+    result.distance[start_node] = 0;
+    visited[start_node] = true;
+    q.push(start_node);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for (int v = 0; v < num_vertices_; ++v) {
+            if (adj_matrix_[u][v] == 1 && !visited[v]) {
+                visited[v] = true;
+                result.parent[v] = u;
+                result.distance[v] = result.distance[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+    return result;
+}
+
+SearchResult AdjacencyMatrix::dfs(int start_node) const {
+    SearchResult result;
+    result.parent.assign(num_vertices_, -1);
+    result.distance.assign(num_vertices_, -1);
+    
+    std::vector<bool> visited(num_vertices_, false);
+    std::stack<int> s;
+
+    s.push(start_node);
+    visited[start_node] = true;
+    result.distance[start_node] = 0;
+    
+    while (!s.empty()) {
+        int u = s.top();
+        s.pop();
+
+        for (int v = 0; v < num_vertices_; ++v) {
+            if (adj_matrix_[u][v] == 1 && !visited[v]) {
+                visited[v] = true;
+                result.parent[v] = u;
+                result.distance[v] = result.distance[u] + 1;
+                s.push(v);
+            }
+        }
+    }
+    return result;
 }
 
 void AdjacencyMatrix::BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const {
@@ -377,6 +493,17 @@ bool Graph::writeResults(const std::string& output_filename) const {
     output_file.close();
     return true;
 }
+
+int Graph::getVertexCount() const { return representation_->getVertexCount(); }
+int Graph::getEdgeCount() const { return representation_->getEdgeCount(); }
+
+SearchResult Graph::bfs(int start_node) const {
+    return representation_->bfs(start_node);
+}
+SearchResult Graph::dfs(int start_node) const {
+    return representation_->dfs(start_node);
+}
+
 void Graph::BFS(int start_node, const std::string& output_file) const {
     std::vector<int> parent, level;
     representation_->BFS(start_node - 1, parent, level);

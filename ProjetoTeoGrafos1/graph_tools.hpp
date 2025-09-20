@@ -13,6 +13,11 @@ enum class RepresentationType {
     ADJACENCY_MATRIX
 };
 
+struct SearchResult {
+    std::vector<int> parent;
+    std::vector<int> distance; // Renomeado de 'level' para 'distance' para clareza
+};
+
 //Interface abstrata
 class IGraphRepresentation {
 public:
@@ -26,6 +31,9 @@ public:
     virtual void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const = 0;
     virtual void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const = 0;
     
+    virtual SearchResult bfs(int start_node) const = 0;
+    virtual SearchResult dfs(int start_node) const = 0;
+
     //Diâmetro e componentes
     virtual int getDistance(int u, int v) const = 0;
     virtual int getDiameter() const = 0;
@@ -45,8 +53,11 @@ public:
     int getVertexCount() const override;
     int getEdgeCount() const override;
     int getDegree(int v) const override;
+
     void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
     void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
+    SearchResult bfs(int start_node) const override;
+    SearchResult dfs(int start_node) const override;
     
     int getDistance(int u, int v) const override;
     int getDiameter() const override;
@@ -68,6 +79,9 @@ public:
     
     void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
     void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
+
+    SearchResult bfs(int start_node) const override;
+    SearchResult dfs(int start_node) const override;
     
     int getDistance(int u, int v) const override;
     int getDiameter() const override;
@@ -85,8 +99,12 @@ public:
     //Funções públicas
     std::vector<double> getDegreeStats() const;
     bool writeResults(const std::string& output_filename) const;
+    int getVertexCount() const;
+    int getEdgeCount() const;
     void BFS(int start_node, const std::string& output_file) const;
     void DFS(int start_node, const std::string& output_file) const;
+    SearchResult bfs(int start_node) const;
+    SearchResult dfs(int start_node) const;
     void writeSearchTree(const std::string& output_file, const std::string& algorithm, int start_node, const std::vector<int>& parent, const std::vector<int>& level) const;
     int getDistance(int u, int v) const;
     int getDiameter() const;
