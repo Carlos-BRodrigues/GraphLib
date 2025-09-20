@@ -9,24 +9,25 @@
 
 namespace graph_tools_lib {
 
-// --- MUDANÇA 1: Implementação da AdjacencyList ---
+//AdjacencyList
 AdjacencyList::AdjacencyList(int num_vertices) : num_vertices_(num_vertices), num_edges_(0) {
     adj_list_.assign(num_vertices, std::vector<int>());
 }
 
-void AdjacencyList::addEdge(int u, int v) {
+void AdjacencyList::addEdge(int u, int v) { //Adiciona aresta
     adj_list_[u].push_back(v+1);
     adj_list_[v].push_back(u+1);
     num_edges_++;
 }
 
-int AdjacencyList::getVertexCount() const { return num_vertices_; }
+int AdjacencyList::getVertexCount() const { return num_vertices_; } //Getter de n
 
-int AdjacencyList::getEdgeCount() const { return num_edges_; }
+int AdjacencyList::getEdgeCount() const { return num_edges_; } //Getter de m
 
-int AdjacencyList::getDegree(int v) const { return adj_list_[v].size(); }
+int AdjacencyList::getDegree(int v) const { return adj_list_[v].size(); } //Getter do grau de um nó específico do grafo
 
 void AdjacencyList::BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const {
+    //BFS segue lógica padrão
     parent.assign(num_vertices_, -1);
     level.assign(num_vertices_, -1);
     std::vector<bool> visited(num_vertices_, false);
@@ -54,6 +55,10 @@ void AdjacencyList::BFS(int start_node, std::vector<int>& parent, std::vector<in
 }
 
 void AdjacencyList::DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const {
+    //Essa DFS descobre todos os vizinhos de um nó de uma vez só quando vai adicionar na pilha já, a diferença para a BFS
+    //é que a ordem dos descobrimentos segue a da mais recente como se espera numa DFS. Essa implementação é
+    //diferente da dos slides, que descobre só quando tira da pilha e não quando adiciona, mas escolhemos fazer assim
+    //porque é o mais comum e "certo" que vimos. Talvez a dos slides seja daquela forma por didática
     parent.assign(num_vertices_, -1);
     level.assign(num_vertices_, -1);
     std::vector<bool> visited(num_vertices_, false);
@@ -61,15 +66,15 @@ void AdjacencyList::DFS(int start_node, std::vector<int>& parent, std::vector<in
     std::stack<int> s;
     s.push(start_node);
     visited[start_node] = true;
-    parent[start_node] = -1; // O vértice inicial não tem pai
+    parent[start_node] = -1; //O vértice inicial não tem pai
     level[start_node] = 0;
     
     while (!s.empty()) {
         int u = s.top();
         s.pop();
 
-        // Percorre os vizinhos em ordem inversa para que a ordem de visitação
-        // seja a mesma da implementação recursiva (depende da ordem de inserção)
+        //Percorre os vizinhos em ordem inversa para que a ordem de visitação
+        //seja a mesma da implementação recursiva (depende da ordem de inserção)
         for (auto it = adj_list_[u].rbegin(); it != adj_list_[u].rend(); ++it) {
             int v_idx = (*it) - 1;
             if (!visited[v_idx]) {
@@ -82,13 +87,13 @@ void AdjacencyList::DFS(int start_node, std::vector<int>& parent, std::vector<in
     }
 }
 
-int AdjacencyList::getDistance(int u, int v) const {
+int AdjacencyList::getDistance(int u, int v) const { //Distância entre dois vértices arbitrários
     std::vector<int> parent, level;
     BFS(u, parent, level);
     return level[v];
 }
 
-int AdjacencyList::getDiameter() const {
+int AdjacencyList::getDiameter() const { //Diâmetro do grafo
     int max_distance = 0;
     for (int i = 0; i < num_vertices_; ++i) {
         std::vector<int> parent, level;
@@ -102,7 +107,7 @@ int AdjacencyList::getDiameter() const {
     return max_distance;
 }
 
-std::vector<std::vector<int>> AdjacencyList::getConnectedComponents() const {
+std::vector<std::vector<int>> AdjacencyList::getConnectedComponents() const { //Pega componentes conexas
     std::vector<std::vector<int>> components;
     std::vector<bool> visited(num_vertices_, false);
     
@@ -150,13 +155,13 @@ void AdjacencyList::print() const {
  }
 
 
-// --- MUDANÇA 2: Implementação da AdjacencyMatrix ---
+//AdjacencyMatrix
 AdjacencyMatrix::AdjacencyMatrix(int num_vertices) : num_vertices_(num_vertices), num_edges_(0) {
     adj_matrix_.assign(num_vertices, std::vector<int>(num_vertices, 0));
 }
 
-void AdjacencyMatrix::addEdge(int u, int v) {
-    if (adj_matrix_[u][v] == 0) { // Evita contar arestas duplicadas
+void AdjacencyMatrix::addEdge(int u, int v) { //Os métodos são análogos aos da lista, os comentários são em geral os mesmos
+    if (adj_matrix_[u][v] == 0) { //Evita contar arestas duplicadas
         num_edges_++;
     }
     adj_matrix_[u][v] = 1;
@@ -291,13 +296,13 @@ void AdjacencyMatrix::print() const {
  }
 
 
-// --- MUDANÇA 3: Refatoração do Construtor e Métodos da Graph ---
-
-// O construtor agora é uma "fábrica" que constrói a representação correta.
+//Classe Graph abstrata implementa a representação específica (adjlist ou adjmatrix)
+//A ideia é ter uma classe só que tem as duas representações como "escolha", fizemos isso porque acredito que deixa o
+//código mais elegante e fácil de expandir ou alterar
 Graph::Graph(const std::string& filename, RepresentationType type) {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        throw std::runtime_error("Error: Could not open file " + filename);
+        throw std::runtime_error("Erro: não pôde abrir o arquivo " + filename);
     }
     
     int num_vertices;
@@ -305,18 +310,18 @@ Graph::Graph(const std::string& filename, RepresentationType type) {
 
     if (type == RepresentationType::ADJACENCY_LIST) {
         representation_ = std::make_unique<AdjacencyList>(num_vertices);
-    } else { // ADJACENCY_MATRIX
+    } else { //Adjacency Matrix
         representation_ = std::make_unique<AdjacencyMatrix>(num_vertices);
     }
 
     int node1, node2;
     while (file >> node1 >> node2) {
-        representation_->addEdge(node1 - 1, node2 - 1); // Delega a adição da aresta
+        representation_->addEdge(node1 - 1, node2 - 1);
     }
     file.close();
 }
 
-// Os métodos da Graph agora simplesmente delegam as chamadas.
+//Chamadas são delegadas
 std::vector<double> Graph::getDegreeStats() const {
     int n = representation_->getVertexCount();
     std::vector<double> degrees;
@@ -324,10 +329,10 @@ std::vector<double> Graph::getDegreeStats() const {
     for (int i = 0; i < n; ++i) {
         degrees.push_back(representation_->getDegree(i));
     }
-    // ... o resto da lógica (min, max, media, etc.) permanece o mesmo ...
+    //min,max,média,mediana
 
      if (degrees.empty()) {
-        return {0, 0, 0, 0}; // Return zero for all stats if graph is empty.
+        return {0, 0, 0, 0}; //Se grafo é vazio
     }
     
     double min_degree = *std::min_element(degrees.begin(), degrees.end());
@@ -350,25 +355,24 @@ std::vector<double> Graph::getDegreeStats() const {
 
 
 void Graph::print() const {
-    // A classe Graph não precisa saber como imprimir, ela apenas pede!
     representation_->print();
 }
 
 bool Graph::writeResults(const std::string& output_filename) const {
     std::ofstream output_file(output_filename);
     if (!output_file.is_open()) {
-        std::cerr << "Error opening file for writing: " << output_filename << std::endl;
+        std::cerr << "Erro ao abrir arquivo para escrita " << output_filename << std::endl;
         return false;
     }
     
-    output_file << "Number of vertices: " << representation_->getVertexCount() << std::endl;
-    output_file << "Number of edges: " << representation_->getEdgeCount() << std::endl;
+    output_file << "Número de vértices: " << representation_->getVertexCount() << std::endl;
+    output_file << "Número de arestas: " << representation_->getEdgeCount() << std::endl;
     
     std::vector<double> stats = this->getDegreeStats();
-    output_file << "Min degree: " << stats[0] << std::endl;
-    output_file << "Max degree: " << stats[1] << std::endl;
-    output_file << "Mean degree: " << stats[2] << std::endl;
-    output_file << "Median degree: " << stats[3] << std::endl;
+    output_file << "Grau mínimo: " << stats[0] << std::endl;
+    output_file << "Grau máximo: " << stats[1] << std::endl;
+    output_file << "Grau médio: " << stats[2] << std::endl;
+    output_file << "Grau mediano: " << stats[3] << std::endl;
     
     output_file.close();
     return true;
@@ -440,4 +444,4 @@ bool Graph::writeConnectedComponents(const std::string& output_filename) const {
     return true;
 }
 
-} // namespace
+}

@@ -3,17 +3,17 @@
 
 #include <string>
 #include <vector>
-#include <memory> // ESSENCIAL: para std::unique_ptr
+#include <memory>
 
 namespace graph_tools_lib {
 
-// MUDANÇA 1: Adicionar um enum para a escolha do usuário
+//Usuário escolhe representação, mais elegante eu imagino do que uma classe só com tudo dentro
 enum class RepresentationType {
     ADJACENCY_LIST,
     ADJACENCY_MATRIX
 };
 
-// MUDANÇA 2: Definir a interface abstrata (o blueprint)
+//Interface abstrata
 class IGraphRepresentation {
 public:
     virtual ~IGraphRepresentation() = default;
@@ -22,19 +22,18 @@ public:
     virtual int getEdgeCount() const = 0;
     virtual int getDegree(int v) const = 0;
     
-    // Novas declarações de métodos de busca
+    //Métodos de busca
     virtual void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const = 0;
     virtual void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const = 0;
     
-    // Novos métodos para diâmetro e componentes
+    //Diâmetro e componentes
     virtual int getDistance(int u, int v) const = 0;
     virtual int getDiameter() const = 0;
     virtual std::vector<std::vector<int>> getConnectedComponents() const = 0;
     virtual void print() const = 0;
-    // Adicione outras funções essenciais aqui se precisar (ex: getNeighbors)
 };
 
-// MUDANÇA 3: Declarar as classes concretas que implementam a interface
+//Classes concretas
 class AdjacencyList : public IGraphRepresentation {
 private:
     int num_vertices_;
@@ -49,7 +48,6 @@ public:
     void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
     void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
     
-    // Novos métodos para diâmetro e componentes
     int getDistance(int u, int v) const override;
     int getDiameter() const override;
     std::vector<std::vector<int>> getConnectedComponents() const override;
@@ -71,7 +69,6 @@ public:
     void BFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
     void DFS(int start_node, std::vector<int>& parent, std::vector<int>& level) const override;
     
-    // Novos métodos para diâmetro e componentes
     int getDistance(int u, int v) const override;
     int getDiameter() const override;
     std::vector<std::vector<int>> getConnectedComponents() const override;
@@ -79,13 +76,13 @@ public:
 };
 
 
-// MUDANÇA 4: Simplificar drasticamente a classe Graph
+//Classe Graph
 class Graph {
 public:
-    // O construtor agora aceita a escolha do tipo
+    //Construtor recebe arquivo e tipo de representação
     Graph(const std::string& filename, RepresentationType type);
 
-    // As funções públicas não mudam para o usuário!
+    //Funções públicas
     std::vector<double> getDegreeStats() const;
     bool writeResults(const std::string& output_filename) const;
     void BFS(int start_node, const std::string& output_file) const;
@@ -97,15 +94,10 @@ public:
     bool writeConnectedComponents(const std::string& output_filename) const;
     void print() const;
 private:
-    // REMOVER os membros antigos:
-    // int num_vertices_;
-    // int num_edges_;
-    // std::vector<std::vector<int>> adj_list_;
-
-    // ADICIONAR um único ponteiro inteligente para a representação
+    //Ponteiro inteligente para a representação
     std::unique_ptr<IGraphRepresentation> representation_;
 };
 
-} // namespace
+}
 
 #endif

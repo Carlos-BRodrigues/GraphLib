@@ -1,6 +1,24 @@
-Number of vertices: 5
-Number of edges: 5
-Min degree: 1
-Max degree: 4
-Mean degree: 2
-Median degree: 2
+Número de vértices: 5
+Número de arestas: 5
+Grau mínimo: 1
+Grau máximo: 4
+Grau médio: 2
+Grau mediano: 2
+
+--- Resultados da Busca em Largura (BFS) a partir do vertice 1 ---
+Vertice: 1, Pai: Nenhum, Nivel: 0
+Vertice: 2, Pai: 1, Nivel: 1
+Vertice: 3, Pai: 5, Nivel: 2
+Vertice: 4, Pai: 5, Nivel: 2
+Vertice: 5, Pai: 1, Nivel: 1
+
+--- Resultados da Busca em Profundidade (DFS) a partir do vertice 1 ---
+Vertice: 1, Pai: Nenhum, Nivel: 0
+Vertice: 2, Pai: 1, Nivel: 1
+Vertice: 3, Pai: 5, Nivel: 2
+Vertice: 4, Pai: 5, Nivel: 2
+Vertice: 5, Pai: 1, Nivel: 1
+
+--- Componentes Conexas ---
+Numero de componentes: 1
+Tamanho: 5 | Vertices: 1 2 5 3 4 
