@@ -69,7 +69,7 @@ class AdjacencyMatrix : public IGraphRepresentation {
 private:
     int num_vertices_;
     int num_edges_;
-    std::vector<std::vector<int>> adj_matrix_;
+    std::vector<std::vector<bool>> adj_matrix_;
 public:
     AdjacencyMatrix(int num_vertices);
     void addEdge(int u, int v) override;
@@ -108,6 +108,7 @@ public:
     void writeSearchTree(const std::string& output_file, const std::string& algorithm, int start_node, const std::vector<int>& parent, const std::vector<int>& level) const;
     int getDistance(int u, int v) const;
     int getDiameter() const;
+    int getDiameterapprox() const;
     std::vector<std::vector<int>> getConnectedComponents() const;
     bool writeConnectedComponents(const std::string& output_filename) const;
     void print() const;

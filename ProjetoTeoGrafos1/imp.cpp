@@ -159,6 +159,7 @@ int AdjacencyList::getDiameter() const { //Diâmetro do grafo
         std::vector<int> parent, level;
         BFS(i, parent, level);
         for (int j = 0; j < num_vertices_; ++j) {
+            if (level[j] < 0) return -1; //Grafo desconectado
             if (level[j] > max_distance) {
                 max_distance = level[j];
             }
@@ -217,15 +218,15 @@ void AdjacencyList::print() const {
 
 //AdjacencyMatrix
 AdjacencyMatrix::AdjacencyMatrix(int num_vertices) : num_vertices_(num_vertices), num_edges_(0) {
-    adj_matrix_.assign(num_vertices, std::vector<int>(num_vertices, 0));
+    adj_matrix_.assign(num_vertices, std::vector<bool>(num_vertices, false));
 }
 
 void AdjacencyMatrix::addEdge(int u, int v) { //Os métodos são análogos aos da lista, os comentários são em geral os mesmos
-    if (adj_matrix_[u][v] == 0) { //Evita contar arestas duplicadas
+    if (adj_matrix_[u][v] == false) { //Evita contar arestas duplicadas
         num_edges_++;
     }
-    adj_matrix_[u][v] = 1;
-    adj_matrix_[v][u] = 1;
+    adj_matrix_[u][v] = true;
+    adj_matrix_[v][u] = true;
 }
 
 int AdjacencyMatrix::getVertexCount() const { return num_vertices_; }
@@ -233,7 +234,7 @@ int AdjacencyMatrix::getVertexCount() const { return num_vertices_; }
 int AdjacencyMatrix::getEdgeCount() const { return num_edges_; }
 
 int AdjacencyMatrix::getDegree(int v) const {
-    return std::accumulate(adj_matrix_[v].begin(), adj_matrix_[v].end(), 0);
+    return std::count(adj_matrix_[v].begin(), adj_matrix_[v].end(), true);
 }
 
 SearchResult AdjacencyMatrix::bfs(int start_node) const {
@@ -253,7 +254,7 @@ SearchResult AdjacencyMatrix::bfs(int start_node) const {
         int u = q.front();
         q.pop();
         for (int v = 0; v < num_vertices_; ++v) {
-            if (adj_matrix_[u][v] == 1 && !visited[v]) {
+            if (adj_matrix_[u][v] == true && !visited[v]) {
                 visited[v] = true;
                 result.parent[v] = u;
                 result.distance[v] = result.distance[u] + 1;
@@ -281,7 +282,7 @@ SearchResult AdjacencyMatrix::dfs(int start_node) const {
         s.pop();
 
         for (int v = 0; v < num_vertices_; ++v) {
-            if (adj_matrix_[u][v] == 1 && !visited[v]) {
+            if (adj_matrix_[u][v] == true && !visited[v]) {
                 visited[v] = true;
                 result.parent[v] = u;
                 result.distance[v] = result.distance[u] + 1;
@@ -307,7 +308,7 @@ void AdjacencyMatrix::BFS(int start_node, std::vector<int>& parent, std::vector<
         int u = q.front();
         q.pop();
         for (int v = 0; v < num_vertices_; ++v) {
-            if (adj_matrix_[u][v] == 1 && !visited[v]) {
+            if (adj_matrix_[u][v] == true && !visited[v]) {
                 visited[v] = true;
                 parent[v] = u;
                 level[v] = level[u] + 1;
@@ -333,7 +334,7 @@ void AdjacencyMatrix::DFS(int start_node, std::vector<int>& parent, std::vector<
         s.pop();
 
         for (int v = 0; v < num_vertices_; ++v) {
-            if (adj_matrix_[u][v] == 1 && !visited[v]) {
+            if (adj_matrix_[u][v] == true && !visited[v]) {
                 visited[v] = true;
                 parent[v] = u;
                 level[v] = level[u] + 1;
@@ -355,6 +356,7 @@ int AdjacencyMatrix::getDiameter() const {
         std::vector<int> parent, level;
         BFS(i, parent, level);
         for (int j = 0; j < num_vertices_; ++j) {
+            if (level[j] < 0) return -1; //Grafo desconectado
             if (level[j] > max_distance) {
                 max_distance = level[j];
             }
@@ -380,7 +382,7 @@ std::vector<std::vector<int>> AdjacencyMatrix::getConnectedComponents() const {
                 current_component.push_back(u + 1);
                 
                 for (int v = 0; v < num_vertices_; ++v) {
-                    if (adj_matrix_[u][v] == 1 && !visited[v]) {
+                    if (adj_matrix_[u][v] == true && !visited[v]) {
                         visited[v] = true;
                         q.push(v);
                     }
@@ -402,7 +404,7 @@ void AdjacencyMatrix::print() const {
     for (int i = 0; i<this->getVertexCount(); i++){
         std::cout<<i+1<<" => ";
         for(int j=0; j<this->getVertexCount(); j++){
-            if(adj_matrix_[i][j]==1){
+            if(adj_matrix_[i][j]==true){
                 std::cout<<j+1<<' ';
             }
         }
@@ -547,6 +549,40 @@ int Graph::getDiameter() const {
 
 std::vector<std::vector<int>> Graph::getConnectedComponents() const {
     return representation_->getConnectedComponents();
+}
+
+int Graph::getDiameterapprox() const {
+    int n = representation_->getVertexCount();
+    if (n < 2) {
+        return 0;
+    }
+        //Inicia uma BFS de um nó arbitrário
+        SearchResult res1 = this->bfs(0);
+        
+        //Encontra o nó 'u' mais distante do início
+        int u = 0;
+        int max_dist = 0;
+        for (int i = 0; i < n; ++i) {
+            //O diâmetro de um grafo desconectado é infinito (-1)
+            if (res1.distance[i] < 0) return -1; 
+            
+            if (res1.distance[i] > max_dist) {
+                max_dist = res1.distance[i];
+                u = i;
+            }
+        }
+
+        //Inicia uma segunda BFS a partir do nó 'u'
+        SearchResult res2 = this->bfs(u);
+        
+        //A maior distância encontrada nesta segunda busca é a aproximação do diâmetro
+        int diameter_approx = 0;
+        for (int dist : res2.distance) {
+            if (dist > diameter_approx) {
+                diameter_approx = dist;
+            }
+        }
+        return diameter_approx;
 }
 
 bool Graph::writeConnectedComponents(const std::string& output_filename) const {
