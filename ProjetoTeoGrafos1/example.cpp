@@ -46,16 +46,16 @@ void analisar_grafo(const std::string& nome_arquivo) {
             graph_list.bfs(dist(rng));
         }
         auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-        std::cout << "LISTA: Tempo médio por BFS: " << duration.count() / 100.0 << " microssegundos" << std::endl;
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "LISTA: Tempo médio por BFS: " << duration.count() / 100.0 << " millissegundos" << std::endl;
 
         start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < 100; ++i) {
             graph_matrix.bfs(dist(rng));
         }
         stop = std::chrono::high_resolution_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-        std::cout << "MATRIZ: Tempo médio por BFS: " << duration.count() / 100.0 << " microssegundos" << std::endl;
+        duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "MATRIZ: Tempo médio por BFS: " << duration.count() / 100.0 << " millissegundos" << std::endl;
     }
     
     // --- Análise de Tempo: DFS (Questão 3) ---
@@ -69,16 +69,16 @@ void analisar_grafo(const std::string& nome_arquivo) {
             graph_list.dfs(dist(rng));
         }
         auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-        std::cout << "LISTA: Tempo médio por DFS: " << duration.count() / 100.0 << " microssegundos" << std::endl;
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "LISTA: Tempo médio por DFS: " << duration.count() / 100.0 << " millissegundos" << std::endl;
 
         start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < 100; ++i) {
             graph_matrix.dfs(dist(rng));
         }
         stop = std::chrono::high_resolution_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-        std::cout << "MATRIZ: Tempo médio por DFS: " << duration.count() / 100.0 << " microssegundos" << std::endl;
+        duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "MATRIZ: Tempo médio por DFS: " << duration.count() / 100.0 << " millissegundos" << std::endl;
     }
     
     // --- Pais na Árvore Geradora (Questão 4) ---
@@ -125,7 +125,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
 
     // --- Diâmetro do Grafo (Questão 7) ---
     std::cout << "\n--- 7. Diâmetro do Grafo ---" << std::endl;
-    std::cout << "Diâmetro (aproximado): " << graph_list.getDiameter() << std::endl;
+    std::cout << "Diâmetro (aproximado): " << graph_list.getDiameterapprox() << std::endl;
 }
 
 int main() {
@@ -136,7 +136,7 @@ int main() {
     };*/
 
     std::vector<std::string> arquivos_de_grafos = {
-        "grafo_1.txt", "grafo_2.txt"
+        "grafo_2.txt"
     };
 
     for (const auto& arquivo : arquivos_de_grafos) {

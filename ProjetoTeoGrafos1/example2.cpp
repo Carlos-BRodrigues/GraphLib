@@ -29,9 +29,12 @@ int main() {
         int diameter_list = graph_list.getDiameter();
         std::cout << "Diametro do grafo (Lista): " << diameter_list << std::endl;
 
+        int apdiameter_list = graph_list.getDiameterapprox();
+        std::cout << "Diametro aproximado do grafo (Lista): " << apdiameter_list << std::endl;
+
         // 5. Distância entre dois vértices (exemplo: 1 e 5)
-        int distance_list = graph_list.getDistance(1, 4);
-        std::cout << "Distancia entre 1 e 4 (Lista): " << distance_list << std::endl;
+        int distance_list = graph_list.getDistance(1, 5);
+        std::cout << "Distancia entre 1 e 5 (Lista): " << distance_list << std::endl;
         
         std::cout << "\n--- Testando a representacao com MATRIZ DE ADJACENCIA ---" << std::endl;
         
@@ -56,6 +59,9 @@ int main() {
         // 4. Diâmetro do Grafo
         int diameter_matrix = graph_matrix.getDiameter();
         std::cout << "Diametro do grafo (Matriz): " << diameter_matrix << std::endl;
+
+        int apdiameter_matrix = graph_matrix.getDiameterapprox();
+        std::cout << "Diametro aproximado do grafo (Matriz): " << apdiameter_matrix << std::endl;
 
         // 5. Distância entre dois vértices (exemplo: 1 e 5)
         int distance_matrix = graph_matrix.getDistance(1, 5);
