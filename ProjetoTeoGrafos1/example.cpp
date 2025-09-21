@@ -94,7 +94,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
         std::cout << "Grafo com menos de 30 vértices, pulando teste." << std::endl;
     }
 
-    // --- Distância entre Vértices (Questão 5) ---
+    //Distância entre Vértices
     std::cout << "\n--- 5. Distância entre Vértices ---" << std::endl;
     if (num_vertices >= 30) {
         std::cout << "Distância (10, 20): " << graph_list.getDistance(10, 20) << std::endl;
@@ -142,4 +142,5 @@ int main() {
     }
 
     return 0;
+
 }
