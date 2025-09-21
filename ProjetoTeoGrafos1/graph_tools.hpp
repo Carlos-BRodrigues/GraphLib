@@ -15,7 +15,7 @@ enum class RepresentationType {
 
 struct SearchResult {
     std::vector<int> parent;
-    std::vector<int> distance; // Renomeado de 'level' para 'distance' para clareza
+    std::vector<int> distance;
 };
 
 //Interface abstrata
