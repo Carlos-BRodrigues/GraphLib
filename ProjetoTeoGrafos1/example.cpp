@@ -75,7 +75,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
         std::cout << "MATRIZ: Tempo médio por DFS: " << duration.count() / 100.0 << " millissegundos" << std::endl;
     }
 
-    // --- Pais na Árvore Geradora (Questão 4) ---
+    // Pais na Árvore Geradora
     std::cout << "\n--- 4. Pais na Árvore Geradora ---" << std::endl;
     if (num_vertices >= 30) {
         std::vector<int> start_nodes = {1, 2, 3};
@@ -144,3 +144,4 @@ int main() {
     return 0;
 
 }
+
