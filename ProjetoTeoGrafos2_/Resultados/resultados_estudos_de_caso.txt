@@ -108,4 +108,5 @@ Caminho Edsger W. Dijkstra -> ├ëva Tardos: Edsger W. Dijkstra -> A. J. M. van
 Dist├óncia entre Edsger W. Dijkstra e ├ëva Tardos: 2.75351
 
 Caminho Edsger W. Dijkstra -> Daniel R. Figueiredo: Edsger W. Dijkstra -> John R. Rice -> Dan C. Marinescu -> Chuang Lin -> Bo Li -> Y. Thomas Hou -> Zhi-Li Zhang -> Donald F. Towsley -> Daniel R. Figueiredo
+
 Dist├óncia entre Edsger W. Dijkstra e Daniel R. Figueiredo: 2.94283
