@@ -33,7 +33,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
     // Gera e salva o relatório de componentes conexas
     graph.generateConnectedComponentsReport(output_filename);
     
-    // --- Cálculo de Distância e Caminho mínimo (Questão 1) --
+    // Cálculo de Distância e Caminho mínimo (Questão 1)
 
     /* for (int target : {20, 30, 40, 50, 60}) {
     auto path = graph.getPath(target, 10);
@@ -46,9 +46,9 @@ void analisar_grafo(const std::string& nome_arquivo) {
     std::cout << "Distância entre o vértice 1 e o vértice "<< target <<": "<< graph.getDistance(10, target) << std::endl;
     }
 
-    // --- Análise de Tempo: Dijkstra - Vetor (Questão 2) ---
+    // Análise de Tempo: Dijkstra - Vetor (Questão 2)
 
-    std::cout << "\n--- 2. Análise de Tempo: Dikjstra - Vetor (100 execuções) ---" << std::endl;
+    std::cout << "\n 2. Análise de Tempo: Dikjstra - Vetor (100 execuções)" << std::endl;
     {
         std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
         std::uniform_int_distribution<int> dist(0, num_vertices - 1);
@@ -62,8 +62,8 @@ void analisar_grafo(const std::string& nome_arquivo) {
         std::cout << "Vetor: Tempo médio por Dijkstra: " << duration.count() / 100.0 << " millissegundos" << std::endl;
     }
 
-    // --- Análise de Tempo: Dijkstra - Heap (Questão 2) ---
-    std::cout << "\n--- 3. Análise de Tempo: Dijkstra - Heap (100 execuções) ---" << std::endl;
+    // Análise de Tempo: Dijkstra - Heap (Questão 2)
+    std::cout << "\n 3. Análise de Tempo: Dijkstra - Heap (100 execuções)" << std::endl;
     {
         std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
         std::uniform_int_distribution<int> dist(0, num_vertices - 1);
@@ -79,7 +79,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
 
     */
 
-    // --- Rede de colaboração entre pesquisadores da area de Computação (Questão 3)
+    // Rede de colaboração entre pesquisadores da area de Computação (Questão 3)
 
     ifstream file("rede_colaboracao_vertices.txt");
     if (!file.is_open()) {
@@ -132,4 +132,5 @@ int main() {
     }
     return 0;
 }
+
 
