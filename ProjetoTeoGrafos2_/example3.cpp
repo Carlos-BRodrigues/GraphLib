@@ -35,7 +35,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
     
     // Cálculo de Distância e Caminho mínimo (Questão 1)
 
-    /* for (int target : {20, 30, 40, 50, 60}) {
+    for (int target : {20, 30, 40, 50, 60}) {
     auto path = graph.getPath(target, 10);
 
     std::cout << "Caminho " << 10 << " -> " << target << ": ";
@@ -77,7 +77,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
         std::cout << "Heap: Tempo médio por Dijkstra: " << duration.count() / 100.0 << " millissegundos" << std::endl;
     }
 
-    */
+
 
     // Rede de colaboração entre pesquisadores da area de Computação (Questão 3)
 
@@ -132,5 +132,6 @@ int main() {
     }
     return 0;
 }
+
 
 
