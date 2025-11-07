@@ -1,0 +1,35 @@
+Número de vértices: 5
+Número de arestas: 6
+Grau mínimo: 1
+Grau máximo: 2
+Grau médio: 1.2
+Grau mediano: 1
+
+--- Árvore de Busca em Largura (BFS) a partir do Vértice 1 ---
+Vértice: 1, Pai: Nenhum (Raiz), Distância: 0
+Vértice: 2, Pai: 1, Distância: 1
+Vértice: 3, Pai: 5, Distância: 2
+Vértice: 4, Pai: 3, Distância: 3
+Vértice: 5, Pai: 1, Distância: 1
+
+--- Árvore de Busca em Profundidade (DFS) a partir do Vértice 1 ---
+Vértice: 1, Pai: Nenhum (Raiz), Nível: 0
+Vértice: 2, Pai: 1, Nível: 1
+Vértice: 3, Pai: 5, Nível: 2
+Vértice: 4, Pai: 3, Nível: 3
+Vértice: 5, Pai: 1, Nível: 1
+
+--- Componentes Conexas ---
+Número de componentes: 1
+Tamanho da maior componente: 5
+Tamanho da menor componente: 5
+
+Componentes:
+Tamanho: 5 | Vertices: 0 1 4 2 3 
+
+--- Árvore do Algoritmo de Bellman_Ford a partir do Vértice 1 ---
+Vértice: 1, Pai: Nenhum (Raiz), Distância: 0
+Vértice: 2, Pai: 1, Distância: 0.1
+Vértice: 3, Pai: 5, Distância: 5.3
+Vértice: 4, Pai: 3, Distância: -2
+Vértice: 5, Pai: 4, Distância: 0.3
