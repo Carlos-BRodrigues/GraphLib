@@ -89,7 +89,7 @@ public:
     SearchResult bfs(int start_node) const;
     SearchResult dfs(int start_node) const;
     SearchResult dijkstra(int start_node, DijkstraImplType impl_type = DijkstraImplType::HEAP) const;
-    SearchResult Bellman_Ford(int start_node) const;
+    SearchResult Bellman_Ford(int end_node) const;
 
     std::vector<std::vector<int>> getConnectedComponents() const;
 
@@ -103,7 +103,7 @@ public:
     void generateBfsReport(int start_node, const std::string& output_filename) const;
     void generateDfsReport(int start_node, const std::string& output_filename) const;
     void generateDijkstraReport(int start_node, const std::string& output_filename, DijkstraImplType impl_type = DijkstraImplType::HEAP) const;
-    void generateBellman_FordReport(int start_node, const std::string& output_filename) const;
+    void generateBellman_FordReport(int end_node, const std::string& output_filename) const;
     void generateConnectedComponentsReport(const std::string& output_filename) const;
 
 private:
@@ -114,4 +114,3 @@ private:
 } // namespace graph_tools_lib
 
 #endif
-
