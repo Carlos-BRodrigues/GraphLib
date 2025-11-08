@@ -226,12 +226,40 @@ SearchResult Graph::dijkstra(int start_node, DijkstraImplType impl_type) const {
 }
 
 // Algoritmo de Bellman_Ford já otimizado
-SearchResult Graph::Bellman_Ford(int start_node) const{
+SearchResult Graph::Bellman_Ford(int end_node) const{
     int n = getVertexCount();
     SearchResult result;
     result.distance.assign(n, std::numeric_limits<double>::infinity());
-    result.parent.assign(n, -1);
-    result.distance[start_node] = 0.0;
+    result.parent.assign(n, -1); // Tem a termologia parent mas ele guarda o sucessor
+    result.distance[end_node] = 0.0;
+    for (int i = 0; i < n - 1; i++){
+        bool k = false;
+        for(int v = 0; v < n; v++){
+            for (const auto& edge : representation_->getNeighbors(v)) {
+                int w = edge.target;
+                double weight = edge.weight;
+                if (result.distance[w] + weight < result.distance[v]) {
+                    result.distance[v] = result.distance[w] + weight;
+                    result.parent[v] = w;
+                    k = true;
+                }
+            }
+        }
+        if (k == false){
+            break;
+        }
+    }
+    for(int v = 0; v < n; v++){
+            for (const auto& edge : representation_->getNeighbors(v)) {
+                int w = edge.target;
+                double weight = edge.weight;
+                if (result.distance[w] + weight < result.distance[v]) {
+                   throw std::runtime_error("O grafo possui ciclos negativos");
+                }
+            }
+        }
+    // Depois Decidimos qual implementação usar
+    /* Bellman_Ford que funciona igual dijkstra ele calcula a distância de um vértice para os outros
     for (int i = 0; i < n - 1; i++){
         bool k = false;
         for(int j = 0; j < n; j++){
@@ -258,33 +286,62 @@ SearchResult Graph::Bellman_Ford(int start_node) const{
                 }
             }
         }
+
+     */
     return result;
 
 }
 
 
 // Função para reconstruir o caminha por meio dos pais
-std::vector<int> Graph::getPath(int target, int u) {
-    SearchResult result = this->dijkstra(u - 1);
+std::vector<int> Graph::getPath(int target, int u) { // Modificado para grafos com pesos negativos
+
+    SearchResult result;
     std::vector<int> path;
-    for (int v = target - 1; v != -1; v = result.parent[v]) {
-        path.push_back(v);
+    if (!hasNegativeWeights()){
+        result = this->dijkstra(u - 1);
+        for (int v = target - 1; v != -1; v = result.parent[v]) {
+            path.push_back(v);
+        }
+        std::reverse(path.begin(), path.end());
     }
-    std::reverse(path.begin(), path.end());
+    if (hasNegativeWeights()){ 
+        result = this->Bellman_Ford(target-1);
+        for (int v = u - 1; v != -1; v = result.parent[v]) {
+            path.push_back(v);
+        }
+    }
     return path;
 }
 
-double Graph::getDistance(int u, int v) const {
-    SearchResult result = this->dijkstra(u-1); //Mudei para 1-based, acho que assim fica menos confuso...
-    return result.distance[v-1];
+double Graph::getDistance(int u, int v) const { // Modificado para grafos com pesos negativos
+    SearchResult result;
+    int l;
+    if (hasNegativeWeights()){
+        result = this->Bellman_Ford(v-1);
+        l = u;
+    }
+    if (!hasNegativeWeights()){
+        result = this->dijkstra(u-1); //Mudei para 1-based, acho que assim fica menos confuso...
+        l = v;
+    }
+    return result.distance[l-1];
 }
 
-double Graph::getDiameter() const {
+double Graph::getDiameter() const { // Modificado para grafos com pesos negativos
     int n = getVertexCount();
     double max_distance = 0.0;
     for (int i = 0; i < n; ++i) {
-        SearchResult res = this->dijkstra(i);
-        for (double dist : res.distance) {
+
+        SearchResult result;
+        if (hasNegativeWeights()){
+            result = this->Bellman_Ford(i);
+        }
+        if (!hasNegativeWeights()){
+            result = this->dijkstra(i); 
+        }
+
+        for (double dist : result.distance) {
             if (dist == std::numeric_limits<double>::infinity()) return -1.0; // Grafo desconectado
             if (dist > max_distance) {
                 max_distance = dist;
@@ -294,11 +351,17 @@ double Graph::getDiameter() const {
     return max_distance;
 }
 
-double Graph::getApproximateDiameter() const {
+double Graph::getApproximateDiameter() const { // Modificado para grafos com pesos negativos
     int n = getVertexCount();
     if (n < 2) return 0.0;
 
-    SearchResult res1 = this->dijkstra(0);
+    SearchResult res1;
+        if (hasNegativeWeights()){
+            res1 = this->Bellman_Ford(0);
+        }
+        if (!hasNegativeWeights()){
+            res1 = this->dijkstra(0); 
+        }
     int u = 0;
     double max_dist = 0.0;
     for (int i = 0; i < n; ++i) {
@@ -309,7 +372,13 @@ double Graph::getApproximateDiameter() const {
         }
     }
 
-    SearchResult res2 = this->dijkstra(u);
+    SearchResult res2;
+        if (hasNegativeWeights()){
+            res2 = this->Bellman_Ford(u);
+        }
+        if (!hasNegativeWeights()){
+            res2 = this->dijkstra(u); 
+        }
     return *std::max_element(res2.distance.begin(), res2.distance.end());
 }
 
@@ -405,7 +474,7 @@ void Graph::generateDfsReport(int start_node, const std::string& output_filename
         } else {
             out << "Pai: Nenhum (Raiz), ";
         }
-        out << "Nível: " << result.distance[i] << std::endl;
+        out << "Distância: " << result.distance[i] << std::endl;
     }
     out.close();
     std::cout << "Relatório salvo em '" << output_filename << "'." << std::endl;
@@ -454,9 +523,9 @@ void Graph::generateBellman_FordReport(int end_node, const std::string& output_f
     for (size_t i = 0; i < result.parent.size(); ++i) {
         out << "Vértice: " << i + 1 << ", "; // Exibe o vértice como 1-based
         if (result.parent[i] != -1) {
-            out << "Pai: " << result.parent[i] + 1 << ", "; // Exibe o pai como 1-based
+            out << "Sucessor: " << result.parent[i] + 1 << ", "; // Exibe o pai como 1-based
         } else {
-            out << "Pai: Nenhum (Raiz), ";
+            out << "Sucessor: Nenhum (Destino), ";
         }
         out << "Distância: " << result.distance[i] << std::endl;
     }
