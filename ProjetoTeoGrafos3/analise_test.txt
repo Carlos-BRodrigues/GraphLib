@@ -8,16 +8,16 @@ Grau mediano: 1
 --- Árvore de Busca em Largura (BFS) a partir do Vértice 1 ---
 Vértice: 1, Pai: Nenhum (Raiz), Distância: 0
 Vértice: 2, Pai: 1, Distância: 1
-Vértice: 3, Pai: 5, Distância: 2
-Vértice: 4, Pai: 3, Distância: 3
-Vértice: 5, Pai: 1, Distância: 1
+Vértice: 3, Pai: 5, Distância: 3
+Vértice: 4, Pai: 3, Distância: 4
+Vértice: 5, Pai: 2, Distância: 2
 
 --- Árvore de Busca em Profundidade (DFS) a partir do Vértice 1 ---
-Vértice: 1, Pai: Nenhum (Raiz), Nível: 0
-Vértice: 2, Pai: 1, Nível: 1
-Vértice: 3, Pai: 5, Nível: 2
-Vértice: 4, Pai: 3, Nível: 3
-Vértice: 5, Pai: 1, Nível: 1
+Vértice: 1, Pai: Nenhum (Raiz), Distância: 0
+Vértice: 2, Pai: 1, Distância: 1
+Vértice: 3, Pai: 5, Distância: 3
+Vértice: 4, Pai: 3, Distância: 4
+Vértice: 5, Pai: 2, Distância: 2
 
 --- Componentes Conexas ---
 Número de componentes: 1
@@ -28,8 +28,8 @@ Componentes:
 Tamanho: 5 | Vertices: 0 1 4 2 3 
 
 --- Árvore do Algoritmo de Bellman_Ford a partir do Vértice 1 ---
-Vértice: 1, Pai: Nenhum (Raiz), Distância: 0
-Vértice: 2, Pai: 1, Distância: 0.1
-Vértice: 3, Pai: 5, Distância: 5.3
-Vértice: 4, Pai: 3, Distância: -2
-Vértice: 5, Pai: 4, Distância: 0.3
+Vértice: 1, Sucessor: Nenhum (Destino), Distância: 0
+Vértice: 2, Sucessor: 5, Distância: 1.2
+Vértice: 3, Sucessor: 4, Distância: -4
+Vértice: 4, Sucessor: 5, Distância: 3.3
+Vértice: 5, Sucessor: 1, Distância: 1
