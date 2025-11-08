@@ -66,9 +66,20 @@ void analisar_grafo(const std::string& nome_arquivo) {
     graph.generateConnectedComponentsReport(output_filename);
     
     // --- 2. Teste de Dijkstra e Caminho (Questão 1) ---
-    std::cout << "\n--- 2. Teste de Dijkstra (Caminho Mínimo) ---" << std::endl;
+    std::cout << "\n--- 2. (Caminho Mínimo) ---" << std::endl;
 
     int start_node_test = 1; // Exemplo
+
+    for (int start : {2, 3, 4, 5, 6}) {
+        auto path = graph.getPath(1, start);
+
+        std::cout << "Caminho " << start << " -> " << 1 << ": ";
+        for (int v : path){
+        std::cout << v + 1 << " ";
+    }
+        std::cout << std::endl;
+        std::cout << "Distância entre o vértice " << start << " e o vértice 1" <<": "<< graph.getDistance(start, 1) << std::endl;
+    }
     
     // Gera e salva o relatório de Dijkstra a partir do nó 10
     /** if (num_vertices >= start_node_test) {
