@@ -447,7 +447,7 @@ void Graph::generateBfsReport(int start_node, const std::string& output_filename
         if (result.parent[i] != -1) {
             out << "Pai: " << result.parent[i] + 1 << ", "; // Exibe o pai como 1-based
         } else {
-            out << "Pai: Nenhum (Raiz), ";
+            out << "Pai: Nenhum, ";
         }
         out << "Distância: " << result.distance[i] << std::endl;
     }
@@ -472,7 +472,7 @@ void Graph::generateDfsReport(int start_node, const std::string& output_filename
         if (result.parent[i] != -1) {
             out << "Pai: " << result.parent[i] + 1 << ", ";
         } else {
-            out << "Pai: Nenhum (Raiz), ";
+            out << "Pai: Nenhum, ";
         }
         out << "Distância: " << result.distance[i] << std::endl;
     }
@@ -500,7 +500,7 @@ void Graph::generateDijkstraReport(int start_node, const std::string& output_fil
         if (result.parent[i] != -1) {
             out << "Pai: " << result.parent[i] + 1 << ", "; // Exibe o pai como 1-based
         } else {
-            out << "Pai: Nenhum (Raiz), ";
+            out << "Pai: Nenhum, ";
         }
         out << "Distância: " << result.distance[i] << std::endl;
     }
@@ -525,7 +525,7 @@ void Graph::generateBellman_FordReport(int end_node, const std::string& output_f
         if (result.parent[i] != -1) {
             out << "Sucessor: " << result.parent[i] + 1 << ", "; // Exibe o pai como 1-based
         } else {
-            out << "Sucessor: Nenhum (Destino), ";
+            out << "Sucessor: Nenhum, ";
         }
         out << "Distância: " << result.distance[i] << std::endl;
     }
@@ -589,7 +589,7 @@ void Graph::generateConnectedComponentsReport(const std::string& output_filename
     for (const auto& component : components) {
         out << "\nComponentes:\nTamanho: " << component.size() << " | Vertices: ";
         for (int v : component) {
-            out << v << " ";
+            out << v + 1 << " ";
         }
         out << std::endl;
     }

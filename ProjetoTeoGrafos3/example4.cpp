@@ -1,14 +1,4 @@
 #include "graph_tools3.hpp"
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <chrono>
-#include <random>
-#include <bits/stdc++.h>
-using namespace std;
-
-#include "graph_tools3.hpp"
 #include <fstream>
 #include <iostream>
 #include <numeric>
@@ -36,7 +26,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
 
     // Usando ADJACENCY_LIST para todos os testes
     // Mude NO_Direction para Direction para testar grafos direcionados
-    graph_tools_lib::Graph graph(nome_arquivo, graph_tools_lib::RepresentationType::ADJACENCY_LIST, graph_tools_lib::Direction_Graph::Direction);
+    graph_tools_lib::Graph graph(nome_arquivo, graph_tools_lib::RepresentationType::ADJACENCY_MATRIX, graph_tools_lib::Direction_Graph::Direction);
     int num_vertices = graph.getVertexCount();
     std::string output_filename = "analise_" + nome_arquivo;
 
@@ -65,21 +55,8 @@ void analisar_grafo(const std::string& nome_arquivo) {
     // Gera e salva o relatório de componentes conexas
     graph.generateConnectedComponentsReport(output_filename);
     
-    // --- 2. Teste de Dijkstra e Caminho (Questão 1) ---
-    std::cout << "\n--- 2. (Caminho Mínimo) ---" << std::endl;
+    graph.print();
 
-    int start_node_test = 1; // Exemplo
-
-    for (int start : {2, 3, 4, 5, 6}) {
-        auto path = graph.getPath(1, start);
-
-        std::cout << "Caminho " << start << " -> " << 1 << ": ";
-        for (int v : path){
-        std::cout << v + 1 << " ";
-    }
-        std::cout << std::endl;
-        std::cout << "Distância entre o vértice " << start << " e o vértice 1" <<": "<< graph.getDistance(start, 1) << std::endl;
-    }
     
     // Gera e salva o relatório de Dijkstra a partir do nó 10
     /** if (num_vertices >= start_node_test) {
@@ -105,12 +82,12 @@ void analisar_grafo(const std::string& nome_arquivo) {
     std::cout << "\n--- 3. Teste de Bellman-Ford ---" << std::endl;
 
     if (graph.hasNegativeWeights()) {
-        std::cout << "Pesos negativos detectados. Executando Bellman-Ford a partir do nó 1..." << std::endl;
+        std::cout << "Pesos negativos detectados. Executando Bellman-Ford a partir do nó 3..." << std::endl;
         // Chamada direta, assumindo que Bellman_Ford retorna SearchResult
         try {
-            graph.Bellman_Ford(1);
+            graph.Bellman_Ford(3);
             std::cout << "Bellman-Ford concluído com sucesso (sem ciclos negativos)." << std::endl;
-            graph.generateBellman_FordReport(1, output_filename);
+            graph.generateBellman_FordReport(3, output_filename);
         } catch (const std::exception& e) {
             std::cerr << "Bellman-Ford ERRO: " << e.what() << std::endl;
         }
@@ -118,46 +95,10 @@ void analisar_grafo(const std::string& nome_arquivo) {
         std::cout << "Sem pesos negativos. Bellman-Ford não é necessário/executado para teste." << std::endl;
     }
     
-    // --- 4. Análise de Tempo: Dijkstra (Questão 2) ---
-    std::cout << "\n--- 4. Análise de Tempo: Dikjstra (100 execuções) ---" << std::endl;
-    
-    // Teste com Implementação Vetorial
-    {
-        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-        std::uniform_int_distribution<int> dist(0, num_vertices - 1);
-        
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < 100; ++i) {
-            graph.dijkstra(dist(rng), graph_tools_lib::DijkstraImplType::VECTOR);
-        }
-        auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        std::cout << "Vetor: Tempo médio por Dijkstra: " << duration.count() / 100.0 << " millissegundos" << std::endl;
-    }
-    
-    // Teste com Implementação Heap (Padrão)
-    {
-        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-        std::uniform_int_distribution<int> dist(0, num_vertices - 1);
-        
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < 100; ++i) {
-            graph.dijkstra(dist(rng)); // HEAP é o padrão
-        }
-        auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        std::cout << "Heap: Tempo médio por Dijkstra: " << duration.count() / 100.0 << " millissegundos" << std::endl;
-    }
-
-
-    // ... (O resto do seu código, incluindo a Análise da Rede de Colaboração, permanece o mesmo)
-    
-    
-    std::cout << "Análise de '" << nome_arquivo << "' concluída." << std::endl;
 }
 
 int main() {
-    std::vector<std::string> arquivos_de_grafos = {"test.txt"};
+    std::vector<std::string> arquivos_de_grafos = {"test2.txt"};
     
     for (const auto& arquivo : arquivos_de_grafos) {
         try {
