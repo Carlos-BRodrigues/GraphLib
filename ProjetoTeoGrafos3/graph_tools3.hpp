@@ -76,6 +76,7 @@ public:
 
 class Graph {
 public:
+    Graph() = default;
     Graph(const std::string& filename, RepresentationType type, Direction_Graph direction);
 
     int getVertexCount() const;
@@ -84,6 +85,9 @@ public:
     bool writeResults(const std::string& output_filename) const;
     void print() const;
     bool hasNegativeWeights() const;
+
+    // Cria um grafo com as arestas invertidas
+    Graph reverseEdges() const;
 
     // Algoritmos
     SearchResult bfs(int start_node) const;
