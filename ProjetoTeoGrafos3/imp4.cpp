@@ -597,4 +597,31 @@ void Graph::generateConnectedComponentsReport(const std::string& output_filename
     out.close();
 }
 
+Graph Graph::reverseEdges() const {
+    Graph reversed; 
+    // 2. Cria e aloca a representação interna (Lista de Adjacência)
+    //    com o número correto de vértices.
+    //    NOTA: Assume-se que o grafo original é direcionado (Direction), 
+    //    conforme o teste que você estava fazendo.
+    reversed.representation_ = std::make_unique<AdjacencyList>(
+        this->getVertexCount(),
+        Direction_Graph::Direction // Mantém a direção no grafo reverso
+    );
+    
+    // É uma boa prática inicializar este membro também.
+    // O grafo reverso deve ter pesos negativos se o original tiver.
+    reversed.has_negative_weights_ = this->hasNegativeWeights(); 
+
+    // 3. Loop de reversão: Para cada aresta u -> v, insere v -> u
+    for (int u = 0; u < getVertexCount(); u++) {
+        // Acesso à representação interna do grafo original (this->representation_)
+        for (const Edge &e : representation_->getNeighbors(u)) {
+            // Insere a aresta invertida (e.target -> u) no novo grafo
+            reversed.representation_->addEdge(e.target, u, e.weight);
+        }
+    }
+
+    return reversed;
+}
+
 }
