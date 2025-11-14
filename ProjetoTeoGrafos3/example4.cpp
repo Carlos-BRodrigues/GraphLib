@@ -26,7 +26,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
 
     // Usando ADJACENCY_LIST para todos os testes
     // Mude NO_Direction para Direction para testar grafos direcionados
-    graph_tools_lib::Graph graph(nome_arquivo, graph_tools_lib::RepresentationType::ADJACENCY_MATRIX, graph_tools_lib::Direction_Graph::Direction);
+    graph_tools_lib::Graph graph(nome_arquivo, graph_tools_lib::RepresentationType::ADJACENCY_LIST, graph_tools_lib::Direction_Graph::Direction);
     int num_vertices = graph.getVertexCount();
     std::string output_filename = "analise_" + nome_arquivo;
 
@@ -36,69 +36,69 @@ void analisar_grafo(const std::string& nome_arquivo) {
     std::ofstream(output_filename, std::ofstream::trunc).close();
 
     graph.writeResults(output_filename);
-    
-    // --- 1. Teste de BFS e DFS ---
-    std::cout << "\n--- 1. Teste de Travessias (BFS e DFS) ---" << std::endl;
-    
-    // Gera e salva a árvore BFS a partir do nó 1 (vértice 0)
-    if (num_vertices >= 1) {
-        std::cout << "Executando BFS a partir do nó 1..." << std::endl;
-        graph.generateBfsReport(1, output_filename);
-    }
-    
-    // Gera e salva a árvore DFS a partir do nó 1
-    if (num_vertices >= 1) {
-        std::cout << "Executando DFS a partir do nó 1..." << std::endl;
-        graph.generateDfsReport(1, output_filename);
-    }
-    
-    // Gera e salva o relatório de componentes conexas
-    graph.generateConnectedComponentsReport(output_filename);
-    
-    graph.print();
+
+    auto grafo_reverso = graph.reverseEdges();
 
     
-    // Gera e salva o relatório de Dijkstra a partir do nó 10
-    /** if (num_vertices >= start_node_test) {
-        std::cout << "Executando Dijkstra a partir do nó " << start_node_test << "..." << std::endl;
-        graph.generateDijkstraReport(start_node_test, output_filename);
-    }
-    
-    // Exemplo de cálculo de caminho e distância
-    for (int target : {20, 30, 40, 50, 60}) {
-        if (num_vertices > target) {
-            auto path = graph.getPath(target, start_node_test); // Assumindo que getPath calcula com base no último Dijkstra/Bellman-Ford
-            
-            std::cout << "Caminho " << start_node_test << " -> " << target << ": ";
-            for (int v : path){
-                std::cout << v + 1 << " ";
-            }
-            std::cout << std::endl;
-            std::cout << "Distância entre o vértice " << start_node_test << " e o vértice "<< target <<": "<< graph.getDistance(start_node_test, target) << std::endl;
-        }
-    }
-    **/
-    // --- 3. Teste de Bellman-Ford ---
-    std::cout << "\n--- 3. Teste de Bellman-Ford ---" << std::endl;
+    // Estudo de caso 1
+    std::cout << "\n--- 1. Teste de Bellman-Ford ---" << std::endl;
 
-    if (graph.hasNegativeWeights()) {
-        std::cout << "Pesos negativos detectados. Executando Bellman-Ford a partir do nó 3..." << std::endl;
-        // Chamada direta, assumindo que Bellman_Ford retorna SearchResult
-        try {
-            graph.Bellman_Ford(3);
-            std::cout << "Bellman-Ford concluído com sucesso (sem ciclos negativos)." << std::endl;
-            graph.generateBellman_FordReport(3, output_filename);
-        } catch (const std::exception& e) {
-            std::cerr << "Bellman-Ford ERRO: " << e.what() << std::endl;
+    auto res = graph.Bellman_Ford(99);
+    for (int start : {10, 20, 30}) {
+        if (num_vertices > start) {
+            std::cout << "Distância entre o vértice " << start << " e o vértice 100: "<< res.distance[start-1] << std::endl;
         }
-    } else {
-        std::cout << "Sem pesos negativos. Bellman-Ford não é necessário/executado para teste." << std::endl;
     }
     
+    // Estudo de caso 2 ---
+
+    std::cout << "\n 2. Análise de Tempo: Bellman-Ford (10 execuções)" << std::endl;
+    {
+        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+        std::uniform_int_distribution<int> dist(0, num_vertices - 1);
+        
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < 10; ++i) {
+            graph.Bellman_Ford(dist(rng));
+        }
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+        std::cout << "Tempo médio por Bellman_Ford: " << duration.count() / 10.0 << "segundos" << std::endl;
+    }
+
+    // Estudo de caso 3
+
+    std::cout << "\n--- 3. Teste Dijkstra ---" << std::endl;
+    if (!graph.hasNegativeWeights()) {
+    
+    auto res2 = grafo_reverso.dijkstra(99);
+    for (int start : {10, 20, 30}) {
+        if (num_vertices > start) {
+            std::cout << "Distância entre o vértice " << start << " e o vértice 100: "<< res2.distance[start-1] << std::endl;
+        }
+    }
+
+    std::cout << "\n  Análise de Tempo: Dijkstra (10 execuções)" << std::endl;
+    {
+        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+        std::uniform_int_distribution<int> dist(0, num_vertices - 1);
+        
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < 10; ++i) {
+            grafo_reverso.dijkstra(dist(rng));
+        }
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+        std::cout << "Tempo médio por dijkstra: " << duration.count() / 10.0 << "segundos" << std::endl;
+    }
+    }
+    else{
+        std::cout << "O Grafo possui pesos negativos" << std::endl;
+    }
 }
 
 int main() {
-    std::vector<std::string> arquivos_de_grafos = {"test2.txt"};
+    std::vector<std::string> arquivos_de_grafos = {"grafo_W_5.txt"};
     
     for (const auto& arquivo : arquivos_de_grafos) {
         try {
