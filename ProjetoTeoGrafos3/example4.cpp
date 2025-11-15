@@ -43,7 +43,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
     // Estudo de caso 1
     std::cout << "\n--- 1. Teste de Bellman-Ford ---" << std::endl;
 
-    auto res = graph.Bellman_Ford(99);
+    auto res = graph.Bellman_Ford(100-1);
     for (int start : {10, 20, 30}) {
         if (num_vertices > start) {
             std::cout << "Distância entre o vértice " << start << " e o vértice 100: "<< res.distance[start-1] << std::endl;
@@ -71,7 +71,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
     std::cout << "\n--- 3. Teste Dijkstra ---" << std::endl;
     if (!graph.hasNegativeWeights()) {
     
-    auto res2 = grafo_reverso.dijkstra(99);
+    auto res2 = grafo_reverso.dijkstra(100-1);
     for (int start : {10, 20, 30}) {
         if (num_vertices > start) {
             std::cout << "Distância entre o vértice " << start << " e o vértice 100: "<< res2.distance[start-1] << std::endl;
@@ -98,7 +98,7 @@ void analisar_grafo(const std::string& nome_arquivo) {
 }
 
 int main() {
-    std::vector<std::string> arquivos_de_grafos = {"grafo_W_5.txt"};
+    std::vector<std::string> arquivos_de_grafos = {"grafo_W_1.txt", "grafo_W_2.txt", "grafo_W_3.txt", "grafo_W_4.txt", "grafo_W_5.txt"};
     
     for (const auto& arquivo : arquivos_de_grafos) {
         try {
