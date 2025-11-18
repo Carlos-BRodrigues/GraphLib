@@ -103,7 +103,7 @@ public:
 
     std::vector<int> getPath(int target, int v);
     
-    double getDistance(int u, int v) const;
+    double getDistance(int s, int t) const;
     double getDiameter() const;
     double getApproximateDiameter() const;
 

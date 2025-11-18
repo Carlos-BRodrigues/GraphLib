@@ -304,29 +304,31 @@ SearchResult Graph::Bellman_Ford_reversed(int start_node) const{
 
 // Função para reconstruir o caminha por meio dos pais
 std::vector<int> Graph::getPath(int target, int u) { // Modificado para grafos com pesos negativos
-
+//1 - based
     SearchResult result;
+    result = this->Run_Search(u - 1);
     std::vector<int> path;
-    if (!hasWeights()){
-        result = this->bfs(u - 1);
-        for (int v = target - 1; v != -1; v = result.parent[v]) {
-            path.push_back(v);
-        }
-        std::reverse(path.begin(), path.end());
+    int current = target - 1; // Start path reconstruction from the target (0-based)
+
+    if (result.distance[current] == std::numeric_limits<double>::infinity() || result.distance[current] < 0) {
+        // Unreachable or error state (e.g., disconnected or negative cycle issue)
+        return path; 
     }
-    if (!hasNegativeWeights()){
-        result = this->dijkstra(u - 1);
-        for (int v = target - 1; v != -1; v = result.parent[v]) {
-            path.push_back(v);
+
+    while (current != -1) {
+        path.push_back(current);
+        if (current == u - 1) { // Stop when the start node is reached
+            break;
         }
-        std::reverse(path.begin(), path.end());
+        current = result.parent[current];
     }
-    if (hasNegativeWeights()){ 
-        result = this->Bellman_Ford(target-1);
-        for (int v = u - 1; v != -1; v = result.parent[v]) {
-            path.push_back(v);
-        }
+    if (path.back() != u - 1) {
+        return {};
     }
+
+    std::reverse(path.begin(), path.end());
+    
+    // Path contains 0-based vertices. The function returns 0-based indices.
     return path;
 }
 
@@ -344,88 +346,69 @@ SearchResult Graph::Run_Search(int start_node) const{
         result = this->dijkstra(s); //Mudei para 1-based, acho que assim fica menos confuso...
     }
     return result;
-}
 
-double Graph::getDistance(int u, int v) const { // Modificado para grafos com pesos negativos
-    SearchResult result;
-    int l;
-    if(!hasWeights()){
-        result = this->bfs(u-1);
-        l = v;
-    }
-    if (hasNegativeWeights()){
-        result = this->Bellman_Ford(v-1);
-        l = u;
-    }
-    if (!hasNegativeWeights()){
-        result = this->dijkstra(u-1); //Mudei para 1-based, acho que assim fica menos confuso...
-        l = v;
-    }
-    return result.distance[l-1];
 }
 
 
+double Graph::getDistance(int s, int t) const {
+    // s = start_node (1-based), t = end_node (1-based)
+    
+    // Run the appropriate search from the source node (u-1)
+    SearchResult result = this->Run_Search(s - 1);
+    
+    // Return the distance to the target node (v-1)
+    return result.distance[t - 1];
+}
 
-double Graph::getDiameter() const { // Modificado para grafos com pesos negativos
+
+double Graph::getDiameter() const {
     int n = getVertexCount();
     double max_distance = 0.0;
-    for (int i = 0; i < n; ++i) {
+    
+    for (int i = 0; i < n; ++i) { // i is the 0-based start node
+        try {
+            // Use Run_Search to get the correct algorithm result
+            SearchResult result = this->Run_Search(i); 
 
-        SearchResult result;
-        if (!hasWeights()){
-            result = this->bfs(i);
-        }
-        if (hasNegativeWeights()){
-            result = this->Bellman_Ford(i);
-        }
-        if (!hasNegativeWeights()){
-            result = this->dijkstra(i); 
-        }
-
-        for (double dist : result.distance) {
-            if (dist == std::numeric_limits<double>::infinity()) return -1.0; // Grafo desconectado
-            if (dist > max_distance) {
-                max_distance = dist;
+            for (double dist : result.distance) {
+                // If any distance is infinity, the graph is disconnected (diameter is undefined/infinite)
+                if (dist == std::numeric_limits<double>::infinity()) {
+                    return -1.0; // Conventionally return -1.0 for disconnected
+                }
+                if (dist > max_distance) {
+                    max_distance = dist;
+                }
             }
+        } catch (const std::runtime_error& e) {
+            // Catches negative cycle error from Bellman-Ford
+            std::cerr << "Erro ao calcular diâmetro: " << e.what() << std::endl;
+            return std::numeric_limits<double>::infinity(); // Saída de Erro 
         }
     }
     return max_distance;
 }
 
-double Graph::getApproximateDiameter() const { // Modificado para grafos com pesos negativos
+double Graph::getApproximateDiameter() const {
     int n = getVertexCount();
     if (n < 2) return 0.0;
 
-    SearchResult res1;
-        if (!hasWeights()){
-            res1 = this->bfs(0);
-        }
-        if (hasNegativeWeights()){
-            res1 = this->Bellman_Ford(0);
-        }
-        if (!hasNegativeWeights()){
-            res1 = this->dijkstra(0); 
-        }
+    // Search from an arbitrary starting node (0)
+    SearchResult res1 = this->Run_Search(0);
+    
     int u = 0;
     double max_dist = 0.0;
     for (int i = 0; i < n; ++i) {
-        if (res1.distance[i] == std::numeric_limits<double>::infinity()) return -1.0;
+        if (res1.distance[i] == std::numeric_limits<double>::infinity()) return -1.0; // Disconnected
         if (res1.distance[i] > max_dist) {
             max_dist = res1.distance[i];
-            u = i;
+            u = i; // Node furthest from the initial start
         }
     }
 
-    SearchResult res2;
-        if (!hasWeights()){
-            res2 = this->bfs(u);
-        }
-        if (hasNegativeWeights()){
-            res2 = this->Bellman_Ford(u);
-        }
-        if (!hasNegativeWeights()){
-            res2 = this->dijkstra(u); 
-        }
+    // Search from the furthest node (u)
+    SearchResult res2 = this->Run_Search(u);
+    
+    // Return the max distance found in the second search
     return *std::max_element(res2.distance.begin(), res2.distance.end());
 }
 
@@ -655,8 +638,7 @@ Graph Graph::reverseEdges() const {
         Direction_Graph::Direction // Mantém a direção no grafo reverso
     );
     
-    // É uma boa prática inicializar este membro também.
-    // O grafo reverso deve ter pesos negativos se o original tiver.
+    reversed.has_weights = this->hasWeights(); 
     reversed.has_negative_weights_ = this->hasNegativeWeights(); 
 
     // 3. Loop de reversão: Para cada aresta u -> v, insere v -> u
