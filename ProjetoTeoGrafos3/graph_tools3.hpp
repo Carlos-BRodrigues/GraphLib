@@ -85,6 +85,7 @@ public:
     bool writeResults(const std::string& output_filename) const;
     void print() const;
     bool hasNegativeWeights() const;
+    bool hasWeights() const;
 
     // Cria um grafo com as arestas invertidas
     Graph reverseEdges() const;
@@ -113,6 +114,7 @@ public:
 private:
     std::unique_ptr<IGraphRepresentation> representation_;
     bool has_negative_weights_;
+    bool has_weights;
 };
 
 } // namespace graph_tools_lib
