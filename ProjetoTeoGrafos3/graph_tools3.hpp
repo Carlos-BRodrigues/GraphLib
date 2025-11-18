@@ -95,6 +95,9 @@ public:
     SearchResult dfs(int start_node) const;
     SearchResult dijkstra(int start_node, DijkstraImplType impl_type = DijkstraImplType::HEAP) const;
     SearchResult Bellman_Ford(int end_node) const;
+    SearchResult Bellman_Ford_reversed(int start_node) const;
+
+    SearchResult Run_Search(int start_node) const;
 
     std::vector<std::vector<int>> getConnectedComponents() const;
 

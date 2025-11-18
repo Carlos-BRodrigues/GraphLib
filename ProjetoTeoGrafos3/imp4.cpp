@@ -90,7 +90,7 @@ Graph::Graph(const std::string& filename, RepresentationType type, Direction_Gra
         double weight = 1.0;
         ss >> node1 >> node2;
         if (ss >> weight) {
-            has_weights = true;
+            if (weight != 1) has_weights = true;
             if (weight < 0) has_negative_weights_ = true;
         }
         if (node1 > 0 && node2 > 0) {
@@ -260,8 +260,17 @@ SearchResult Graph::Bellman_Ford(int end_node) const{
                 }
             }
         }
+
+    return result;
+}
     // Depois Decidimos qual implementação usar
-    /* Bellman_Ford que funciona igual dijkstra ele calcula a distância de um vértice para os outros
+    // Bellman_Ford que funciona igual dijkstra ele calcula a distância de um vértice para os outros
+SearchResult Graph::Bellman_Ford_reversed(int start_node) const{
+    int n = getVertexCount();
+    SearchResult result;
+    result.distance.assign(n, std::numeric_limits<double>::infinity());
+    result.parent.assign(n, -1); //parent
+    result.distance[start_node] = 0.0;
     for (int i = 0; i < n - 1; i++){
         bool k = false;
         for(int j = 0; j < n; j++){
@@ -289,9 +298,7 @@ SearchResult Graph::Bellman_Ford(int end_node) const{
             }
         }
 
-     */
     return result;
-
 }
 
 
@@ -323,12 +330,28 @@ std::vector<int> Graph::getPath(int target, int u) { // Modificado para grafos c
     return path;
 }
 
+SearchResult Graph::Run_Search(int start_node) const{
+    SearchResult result;
+    int s = start_node;
+    if(!hasWeights()){
+        result = this->bfs(s);
+        //std::cout<<"B";
+    }
+    if (hasNegativeWeights()){
+        result = this->Bellman_Ford_reversed(s);
+    }
+    if (!hasNegativeWeights()){
+        result = this->dijkstra(s); //Mudei para 1-based, acho que assim fica menos confuso...
+    }
+    return result;
+}
+
 double Graph::getDistance(int u, int v) const { // Modificado para grafos com pesos negativos
     SearchResult result;
     int l;
     if(!hasWeights()){
-        result = this->bfs(v-1);
-        l = u;
+        result = this->bfs(u-1);
+        l = v;
     }
     if (hasNegativeWeights()){
         result = this->Bellman_Ford(v-1);
@@ -340,6 +363,8 @@ double Graph::getDistance(int u, int v) const { // Modificado para grafos com pe
     }
     return result.distance[l-1];
 }
+
+
 
 double Graph::getDiameter() const { // Modificado para grafos com pesos negativos
     int n = getVertexCount();

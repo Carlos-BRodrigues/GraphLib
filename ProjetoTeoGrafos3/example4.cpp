@@ -39,66 +39,12 @@ void analisar_grafo(const std::string& nome_arquivo) {
 
     auto grafo_reverso = graph.reverseEdges();
 
+    auto result = graph.Run_Search(1);
     
-    // Estudo de caso 1
-    std::cout << "\n--- 1. Teste de Bellman-Ford ---" << std::endl;
-
-    auto res = graph.Bellman_Ford(100-1);
-    for (int start : {10, 20, 30}) {
-        if (num_vertices > start) {
-            std::cout << "Distância entre o vértice " << start << " e o vértice 100: "<< res.distance[start-1] << std::endl;
-        }
-    }
-    
-    // Estudo de caso 2 ---
-
-    std::cout << "\n 2. Análise de Tempo: Bellman-Ford (10 execuções)" << std::endl;
-    {
-        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-        std::uniform_int_distribution<int> dist(0, num_vertices - 1);
-        
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < 10; ++i) {
-            graph.Bellman_Ford(dist(rng));
-        }
-        auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
-        std::cout << "Tempo médio por Bellman_Ford: " << duration.count() / 10.0 << "segundos" << std::endl;
-    }
-
-    // Estudo de caso 3
-
-    std::cout << "\n--- 3. Teste Dijkstra ---" << std::endl;
-    if (!graph.hasNegativeWeights()) {
-    
-    auto res2 = grafo_reverso.dijkstra(100-1);
-    for (int start : {10, 20, 30}) {
-        if (num_vertices > start) {
-            std::cout << "Distância entre o vértice " << start << " e o vértice 100: "<< res2.distance[start-1] << std::endl;
-        }
-    }
-
-    std::cout << "\n  Análise de Tempo: Dijkstra (10 execuções)" << std::endl;
-    {
-        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-        std::uniform_int_distribution<int> dist(0, num_vertices - 1);
-        
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < 10; ++i) {
-            grafo_reverso.dijkstra(dist(rng));
-        }
-        auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
-        std::cout << "Tempo médio por dijkstra: " << duration.count() / 10.0 << "segundos" << std::endl;
-    }
-    }
-    else{
-        std::cout << "O Grafo possui pesos negativos" << std::endl;
-    }
 }
 
 int main() {
-    std::vector<std::string> arquivos_de_grafos = {"grafo_W_1.txt", "grafo_W_2.txt", "grafo_W_3.txt", "grafo_W_4.txt", "grafo_W_5.txt"};
+    std::vector<std::string> arquivos_de_grafos = {"test.txt","test2.txt", "test3.txt"};
     
     for (const auto& arquivo : arquivos_de_grafos) {
         try {
