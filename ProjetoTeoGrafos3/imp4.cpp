@@ -336,7 +336,6 @@ SearchResult Graph::Run_Search(int start_node) const{
     int s = start_node;
     if(!hasWeights()){
         result = this->bfs(s);
-        //std::cout<<"B";
     }
     if (hasNegativeWeights()){
         result = this->Bellman_Ford_reversed(s);
@@ -636,3 +635,4 @@ Graph Graph::reverseEdges() const {
 }
 
 }
+
