@@ -13,11 +13,11 @@ Resultados detalhados ser├úo salvos em: analise_grafo_W_2.txt
 
 --- 1. Teste de Bellman-Ford ---
 Dist├óncia entre o v├®rtice 10 e o v├®rtice 100: 10.47
-Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 8.48
-Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 8.71
+Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 8.48 
+Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 8.71 
 
- 2. An├ílise de Tempo: Bellman-Ford (10 execu├º├Áes)
-Tempo m├®dio por Bellman_Ford: 0.3segundos
+ 2. An├ílise de Tempo: Bellman-Ford (10 execu├º├Áes)  
+Tempo m├®dio por Bellman_Ford: 91.5millisegundos
 
 --- 3. Teste Dijkstra ---
 Dist├óncia entre o v├®rtice 10 e o v├®rtice 100: 10.47
@@ -25,7 +25,7 @@ Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 8.48
 Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 8.71
 
   An├ílise de Tempo: Dijkstra (10 execu├º├Áes)
-Tempo m├®dio por dijkstra: 0segundos
+Tempo m├®dio por dijkstra: 17.7millisegundos
 
 ==============================================
 Analisando o grafo: grafo_W_3.txt
@@ -38,7 +38,7 @@ Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 5.42
 Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 4.67
 
  2. An├ílise de Tempo: Bellman-Ford (10 execu├º├Áes)
-Tempo m├®dio por Bellman_Ford: 2.9segundos
+Tempo m├®dio por Bellman_Ford: 0.6segundos
 
 --- 3. Teste Dijkstra ---
 Dist├óncia entre o v├®rtice 10 e o v├®rtice 100: 4.63
@@ -46,7 +46,7 @@ Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 5.42
 Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 4.67
 
   An├ílise de Tempo: Dijkstra (10 execu├º├Áes)
-Tempo m├®dio por dijkstra: 0.4segundos
+Tempo m├®dio por dijkstra: 0.1segundos
 
 ==============================================
 Analisando o grafo: grafo_W_4.txt
@@ -59,7 +59,7 @@ Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 8.83
 Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 9.23
 
  2. An├ílise de Tempo: Bellman-Ford (10 execu├º├Áes)
-Tempo m├®dio por Bellman_Ford: 36.4segundos
+Tempo m├®dio por Bellman_Ford: 8.9segundos
 
 --- 3. Teste Dijkstra ---
 Dist├óncia entre o v├®rtice 10 e o v├®rtice 100: 9.04
@@ -67,7 +67,7 @@ Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 8.83
 Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 9.23
 
   An├ílise de Tempo: Dijkstra (10 execu├º├Áes)
-Tempo m├®dio por dijkstra: 5.2segundos
+Tempo m├®dio por dijkstra: 1.2segundos
 
 ==============================================
 Analisando o grafo: grafo_W_5.txt
@@ -80,7 +80,7 @@ Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 42.63
 Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 37.86
 
  2. An├ílise de Tempo: Bellman-Ford (10 execu├º├Áes)
-Tempo m├®dio por Bellman_Ford: 150.2segundos
+Tempo m├®dio por Bellman_Ford: 82.8segundos
 
 --- 3. Teste Dijkstra ---
 Dist├óncia entre o v├®rtice 10 e o v├®rtice 100: 37.85
@@ -88,4 +88,4 @@ Dist├óncia entre o v├®rtice 20 e o v├®rtice 100: 42.63
 Dist├óncia entre o v├®rtice 30 e o v├®rtice 100: 37.86
 
   An├ílise de Tempo: Dijkstra (10 execu├º├Áes)
-Tempo m├®dio por dijkstra: 28.4segundos
+Tempo m├®dio por dijkstra: 8segundos
