@@ -72,7 +72,7 @@ void AdjacencyMatrix::print() const {
 
 
 
-Graph::Graph(const std::string& filename, RepresentationType type, Direction_Graph direction) : has_negative_weights_(false) {
+Graph::Graph(const std::string& filename, RepresentationType type, Direction_Graph direction) : has_negative_weights_(false), has_weights(false) {
     std::ifstream file(filename);
     if (!file.is_open()) throw std::runtime_error("Erro: não pôde abrir o arquivo " + filename);
     int num_vertices;
@@ -90,6 +90,7 @@ Graph::Graph(const std::string& filename, RepresentationType type, Direction_Gra
         double weight = 1.0;
         ss >> node1 >> node2;
         if (ss >> weight) {
+            has_weights = true;
             if (weight < 0) has_negative_weights_ = true;
         }
         if (node1 > 0 && node2 > 0) {
@@ -103,6 +104,7 @@ int Graph::getVertexCount() const { return representation_->getVertexCount(); }
 int Graph::getEdgeCount() const { return representation_->getEdgeCount(); }
 void Graph::print() const { representation_->print(); }
 bool Graph::hasNegativeWeights() const { return has_negative_weights_; }
+bool Graph::hasWeights() const { return has_weights; }
 
 SearchResult Graph::bfs(int start_node) const {
     int n = getVertexCount();
@@ -298,6 +300,13 @@ std::vector<int> Graph::getPath(int target, int u) { // Modificado para grafos c
 
     SearchResult result;
     std::vector<int> path;
+    if (!hasWeights()){
+        result = this->bfs(u - 1);
+        for (int v = target - 1; v != -1; v = result.parent[v]) {
+            path.push_back(v);
+        }
+        std::reverse(path.begin(), path.end());
+    }
     if (!hasNegativeWeights()){
         result = this->dijkstra(u - 1);
         for (int v = target - 1; v != -1; v = result.parent[v]) {
@@ -317,6 +326,10 @@ std::vector<int> Graph::getPath(int target, int u) { // Modificado para grafos c
 double Graph::getDistance(int u, int v) const { // Modificado para grafos com pesos negativos
     SearchResult result;
     int l;
+    if(!hasWeights()){
+        result = this->bfs(v-1);
+        l = u;
+    }
     if (hasNegativeWeights()){
         result = this->Bellman_Ford(v-1);
         l = u;
@@ -334,6 +347,9 @@ double Graph::getDiameter() const { // Modificado para grafos com pesos negativo
     for (int i = 0; i < n; ++i) {
 
         SearchResult result;
+        if (!hasWeights()){
+            result = this->bfs(i);
+        }
         if (hasNegativeWeights()){
             result = this->Bellman_Ford(i);
         }
@@ -356,6 +372,9 @@ double Graph::getApproximateDiameter() const { // Modificado para grafos com pes
     if (n < 2) return 0.0;
 
     SearchResult res1;
+        if (!hasWeights()){
+            res1 = this->bfs(0);
+        }
         if (hasNegativeWeights()){
             res1 = this->Bellman_Ford(0);
         }
@@ -373,6 +392,9 @@ double Graph::getApproximateDiameter() const { // Modificado para grafos com pes
     }
 
     SearchResult res2;
+        if (!hasWeights()){
+            res2 = this->bfs(u);
+        }
         if (hasNegativeWeights()){
             res2 = this->Bellman_Ford(u);
         }
