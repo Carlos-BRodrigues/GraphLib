@@ -24,6 +24,15 @@ enum class Direction_Graph{
     NO_Direction
 };
 
+enum class AlgorithmType {
+    AUTO_SEARCH, // Default: Uses Run_Search
+    BFS,
+    DFS,
+    DIJKSTRA_HEAP,
+    DIJKSTRA_VECTOR,
+    BELLMAN_FORD_REVERSED,
+};
+
 struct Edge {
     int target;
     double weight;
@@ -108,9 +117,8 @@ public:
     double getApproximateDiameter() const;
 
     // Funções de relatório
-    void generateBfsReport(int start_node, const std::string& output_filename) const;
-    void generateDfsReport(int start_node, const std::string& output_filename) const;
-    void generateDijkstraReport(int start_node, const std::string& output_filename, DijkstraImplType impl_type = DijkstraImplType::HEAP) const;
+
+    void generateReport(int start_node, const std::string& output_filename, AlgorithmType algo_type = AlgorithmType::AUTO_SEARCH) const;
     void generateBellman_FordReport(int end_node, const std::string& output_filename) const;
     void generateConnectedComponentsReport(const std::string& output_filename) const;
 

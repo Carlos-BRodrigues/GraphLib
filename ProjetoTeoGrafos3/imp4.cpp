@@ -37,10 +37,10 @@ void AdjacencyList::print() const {
     }
 }
 AdjacencyMatrix::AdjacencyMatrix(int num_vertices, Direction_Graph direction) : num_vertices_(num_vertices), num_edges_(0), direction_type_(direction) {
-    adj_matrix_.assign(num_vertices, std::vector<double>(num_vertices, 0.0));
+    adj_matrix_.assign(num_vertices, std::vector<double>(num_vertices, std::numeric_limits<double>::infinity()));
 }
 void AdjacencyMatrix::addEdge(int u, int v, double weight) {
-    if (adj_matrix_[u][v] == 0.0) num_edges_++;
+    if (adj_matrix_[u][v] == std::numeric_limits<double>::infinity()) num_edges_++;
     adj_matrix_[u][v] = weight;
     if (direction_type_ == Direction_Graph::NO_Direction){ // adiciona o inverso da aresta se não for direcionado
         adj_matrix_[v][u] = weight;
@@ -110,7 +110,7 @@ SearchResult Graph::bfs(int start_node) const {
     int n = getVertexCount();
     SearchResult result;
     result.parent.assign(n, -1);
-    result.distance.assign(n, -1.0);
+    result.distance.assign(n, std::numeric_limits<double>::infinity());
     std::queue<int> q;
     result.distance[start_node] = 0.0;
     q.push(start_node);
@@ -133,7 +133,7 @@ SearchResult Graph::dfs(int start_node) const {
     int n = getVertexCount();
     SearchResult result;
     result.parent.assign(n, -1);
-    result.distance.assign(n, -1.0);
+    result.distance.assign(n, std::numeric_limits<double>::infinity());
     std::stack<int> s;
     std::vector<bool> visited(n, false);
 
@@ -228,6 +228,7 @@ SearchResult Graph::dijkstra(int start_node, DijkstraImplType impl_type) const {
 }
 
 // Algoritmo de Bellman_Ford já otimizado
+// From all to sink
 SearchResult Graph::Bellman_Ford(int end_node) const{
     int n = getVertexCount();
     SearchResult result;
@@ -263,8 +264,7 @@ SearchResult Graph::Bellman_Ford(int end_node) const{
 
     return result;
 }
-    // Depois Decidimos qual implementação usar
-    // Bellman_Ford que funciona igual dijkstra ele calcula a distância de um vértice para os outros
+    // Outra versão do Bellman_Ford que funciona igual dijkstra ele calcula a distância de um vértice para os outros
 SearchResult Graph::Bellman_Ford_reversed(int start_node) const{
     int n = getVertexCount();
     SearchResult result;
@@ -303,12 +303,11 @@ SearchResult Graph::Bellman_Ford_reversed(int start_node) const{
 
 
 // Função para reconstruir o caminha por meio dos pais
-std::vector<int> Graph::getPath(int target, int u) { // Modificado para grafos com pesos negativos
-//1 - based
+std::vector<int> Graph::getPath(int target, int u) { //1 - based
     SearchResult result;
     result = this->Run_Search(u - 1);
     std::vector<int> path;
-    int current = target - 1; // Start path reconstruction from the target (0-based)
+    int current = target - 1;
 
     if (result.distance[current] == std::numeric_limits<double>::infinity() || result.distance[current] < 0) {
         // Unreachable or error state (e.g., disconnected or negative cycle issue)
@@ -317,7 +316,7 @@ std::vector<int> Graph::getPath(int target, int u) { // Modificado para grafos c
 
     while (current != -1) {
         path.push_back(current);
-        if (current == u - 1) { // Stop when the start node is reached
+        if (current == u - 1) { 
             break;
         }
         current = result.parent[current];
@@ -343,7 +342,7 @@ SearchResult Graph::Run_Search(int start_node) const{
         result = this->Bellman_Ford_reversed(s);
     }
     if (!hasNegativeWeights()){
-        result = this->dijkstra(s); //Mudei para 1-based, acho que assim fica menos confuso...
+        result = this->dijkstra(s);
     }
     return result;
 
@@ -365,15 +364,14 @@ double Graph::getDiameter() const {
     int n = getVertexCount();
     double max_distance = 0.0;
     
-    for (int i = 0; i < n; ++i) { // i is the 0-based start node
+    for (int i = 0; i < n; ++i) {
         try {
-            // Use Run_Search to get the correct algorithm result
             SearchResult result = this->Run_Search(i); 
 
             for (double dist : result.distance) {
                 // If any distance is infinity, the graph is disconnected (diameter is undefined/infinite)
                 if (dist == std::numeric_limits<double>::infinity()) {
-                    return -1.0; // Conventionally return -1.0 for disconnected
+                    return -1.0;
                 }
                 if (dist > max_distance) {
                     max_distance = dist;
@@ -457,89 +455,77 @@ bool Graph::writeResults(const std::string& output_filename) const {
     return true;
 }
 
-
-
-//Esta função executa o BFS e formata a árvore de busca resultante em um arquivo.
-void Graph::generateBfsReport(int start_node, const std::string& output_filename) const {
-    std::cout << "Gerando relatório BFS para o nó " << start_node << "..." << std::endl;
-
-    SearchResult result = this->bfs(start_node - 1);
-
-    std::ofstream out(output_filename, std::ios_base::app);
-    if (!out.is_open()) {
-        throw std::runtime_error("Erro: não foi possível abrir o arquivo para escrita: " + output_filename);
-    }
-
-    out << "\n--- Árvore de Busca em Largura (BFS) a partir do Vértice " << start_node << " ---\n";
-
-    for (size_t i = 0; i < result.parent.size(); ++i) {
-        out << "Vértice: " << i + 1 << ", "; // Exibe o vértice como 1-based
-        if (result.parent[i] != -1) {
-            out << "Pai: " << result.parent[i] + 1 << ", "; // Exibe o pai como 1-based
-        } else {
-            out << "Pai: Nenhum, ";
-        }
-        out << "Distância: " << result.distance[i] << std::endl;
-    }
-
-    out.close();
-    std::cout << "Relatório salvo em '" << output_filename << "'." << std::endl;
-}
-
-// DFS também tem seu report
-void Graph::generateDfsReport(int start_node, const std::string& output_filename) const {
-    std::cout << "Gerando relatório DFS para o nó " << start_node << "..." << std::endl;
-    SearchResult result = this->dfs(start_node - 1);
-
-    std::ofstream out(output_filename, std::ios_base::app);
-    if (!out.is_open()) {
-        throw std::runtime_error("Erro: não foi possível abrir o arquivo para escrita: " + output_filename);
-    }
+void Graph::generateReport(int start_node, const std::string& output_filename, AlgorithmType algo_type) const {
+    std::cout << "Gerando relatório para o nó " << start_node << "..." << std::endl;
     
-    out << "\n--- Árvore de Busca em Profundidade (DFS) a partir do Vértice " << start_node << " ---\n";
-    for (size_t i = 0; i < result.parent.size(); ++i) {
-        out << "Vértice: " << i + 1 << ", ";
-        if (result.parent[i] != -1) {
-            out << "Pai: " << result.parent[i] + 1 << ", ";
-        } else {
-            out << "Pai: Nenhum, ";
-        }
-        out << "Distância: " << result.distance[i] << std::endl;
+    // Determine which algorithm to run
+    SearchResult result;
+    std::string algo_name;
+    
+    // Convert 1-based start_node to 0-based for internal functions
+    int start_node_0based = start_node - 1;
+
+    // Use a switch statement to select the algorithm
+    switch (algo_type) {
+        case AlgorithmType::BFS:
+            result = this->bfs(start_node_0based);
+            algo_name = "Busca em Largura (BFS)";
+            break;
+        case AlgorithmType::DFS:
+            result = this->dfs(start_node_0based);
+            algo_name = "Busca em Profundidade (DFS)";
+            break;
+        case AlgorithmType::DIJKSTRA_HEAP:
+            result = this->dijkstra(start_node_0based, DijkstraImplType::HEAP);
+            algo_name = "Dijkstra (Heap)";
+            break;
+        case AlgorithmType::DIJKSTRA_VECTOR:
+            result = this->dijkstra(start_node_0based, DijkstraImplType::VECTOR);
+            algo_name = "Dijkstra (Vector)";
+            break;
+        case AlgorithmType::BELLMAN_FORD_REVERSED:
+            result = this->Bellman_Ford_reversed(start_node_0based);
+            algo_name = "Bellman-Ford (Source-to-All)";
+            break;
+        case AlgorithmType::AUTO_SEARCH:
+        default:
+            result = this->Run_Search(start_node_0based);
+            std::string algorithm_name_part = (hasWeights() ? (hasNegativeWeights() ? "Bellman-Ford" : "Dijkstra") : "BFS");
+            algo_name = std::string("Busca Automática (") + algorithm_name_part + ")";
+            break;
     }
-    out.close();
-    std::cout << "Relatório salvo em '" << output_filename << "'." << std::endl;
-}
 
-
-// Usa o Dijkstra
-void Graph::generateDijkstraReport(int start_node, const std::string& output_filename, DijkstraImplType impl_type) const {
-    std::cout << "Gerando relatório Dijkstra para o nó " << start_node << "..." << std::endl;
-
-    SearchResult result = this->dijkstra(start_node - 1, impl_type);
-
+    // Write the results to the file
     std::ofstream out(output_filename, std::ios_base::app);
     if (!out.is_open()) {
         throw std::runtime_error("Erro: não foi possível abrir o arquivo para escrita: " + output_filename);
     }
 
-    out << "\n--- Árvore do Algoritmo de Dijkstra a partir do Vértice " << start_node << " ---\n";
+    out << "\n--- Árvore de " << algo_name << " a partir do Vértice " << start_node << " ---\n";
     
-    // Agora, usamos 'result.parent' e 'result.distance' para obter os dados.
+    const std::string parent_label = "Pai: ";
+    
     for (size_t i = 0; i < result.parent.size(); ++i) {
-        out << "Vértice: " << i + 1 << ", "; // Exibe o vértice como 1-based
+        out << "Vértice: " << i + 1 << ", "; // 1-based vertex
         if (result.parent[i] != -1) {
-            out << "Pai: " << result.parent[i] + 1 << ", "; // Exibe o pai como 1-based
+            out << parent_label << result.parent[i] + 1 << ", "; // 1-based parent
         } else {
-            out << "Pai: Nenhum, ";
+            out << parent_label << "Nenhum, ";
         }
-        out << "Distância: " << result.distance[i] << std::endl;
+        
+        if (result.distance[i] == std::numeric_limits<double>::infinity()) {
+            out << "Distância: INFINITO" << std::endl;
+        } else {
+            out << "Distância: " << result.distance[i] << std::endl;
+        }
     }
 
     out.close();
     std::cout << "Relatório salvo em '" << output_filename << "'." << std::endl;
 }
+
 void Graph::generateBellman_FordReport(int end_node, const std::string& output_filename) const {
-    std::cout << "Gerando relatório Bellman_Ford para o nó " << end_node << "..." << std::endl;
+    std::cout << "Gerando relatório Bellman_Ford (De todos para o nó final) para o nó" << end_node << "..." << std::endl;
 
     SearchResult result = this->Bellman_Ford(end_node - 1);
 
@@ -548,7 +534,7 @@ void Graph::generateBellman_FordReport(int end_node, const std::string& output_f
         throw std::runtime_error("Erro: não foi possível abrir o arquivo para escrita: " + output_filename);
     }
 
-    out << "\n--- Árvore do Algoritmo de Bellman_Ford a partir do Vértice " << end_node << " ---\n";
+    out << "\n--- Árvore do Algoritmo de Bellman_Ford (Sink Tree) a partir do Vértice " << end_node << " ---\n";
 
     for (size_t i = 0; i < result.parent.size(); ++i) {
         out << "Vértice: " << i + 1 << ", "; // Exibe o vértice como 1-based
@@ -629,10 +615,7 @@ void Graph::generateConnectedComponentsReport(const std::string& output_filename
 
 Graph Graph::reverseEdges() const {
     Graph reversed; 
-    // 2. Cria e aloca a representação interna (Lista de Adjacência)
-    //    com o número correto de vértices.
-    //    NOTA: Assume-se que o grafo original é direcionado (Direction), 
-    //    conforme o teste que você estava fazendo.
+    //Inverte o grafo em lista (por enquanto só em lista)
     reversed.representation_ = std::make_unique<AdjacencyList>(
         this->getVertexCount(),
         Direction_Graph::Direction // Mantém a direção no grafo reverso
@@ -641,9 +624,8 @@ Graph Graph::reverseEdges() const {
     reversed.has_weights = this->hasWeights(); 
     reversed.has_negative_weights_ = this->hasNegativeWeights(); 
 
-    // 3. Loop de reversão: Para cada aresta u -> v, insere v -> u
+    // Para cada aresta u -> v, insere v -> u
     for (int u = 0; u < getVertexCount(); u++) {
-        // Acesso à representação interna do grafo original (this->representation_)
         for (const Edge &e : representation_->getNeighbors(u)) {
             // Insere a aresta invertida (e.target -> u) no novo grafo
             reversed.representation_->addEdge(e.target, u, e.weight);
