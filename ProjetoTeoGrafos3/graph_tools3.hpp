@@ -25,7 +25,7 @@ enum class Direction_Graph{
 };
 
 enum class AlgorithmType {
-    AUTO_SEARCH, // Default: Uses Run_Search
+    AUTO_SEARCH, // Default
     BFS,
     DFS,
     DIJKSTRA_HEAP,
@@ -135,6 +135,7 @@ private:
 } // namespace graph_tools_lib
 
 #endif
+
 
 
 
