@@ -552,6 +552,66 @@ void Graph::generateBellman_FordReport(int end_node, const std::string& output_f
 std::vector<std::vector<int>> Graph::getConnectedComponents() const {
     int n = getVertexCount();
     std::vector<std::vector<int>> components;
+
+    // Caso NÃO DIRECIONADO → componentes conexos normais
+    if (direction_type_ == Direction_Graph::NO_Direction) {
+        std::vector<bool> visited(n, false);
+
+        for (int i = 0; i < n; ++i) {
+            if (!visited[i]) {
+                SearchResult r = this->bfs(i);
+                std::vector<int> comp;
+
+                for (int j = 0; j < n; ++j) {
+                    if (r.distance[j] >= 0 && !visited[j]) {
+                        visited[j] = true;
+                        comp.push_back(j);
+                    }
+                }
+                components.push_back(comp);
+            }
+        }
+
+        return components;
+    }
+
+    // ---------------------------------------------------------
+    // Caso DIRECIONADO → SCC usando apenas BFS (slow but correct)
+    // ---------------------------------------------------------
+
+    Graph rev = reverseEdges();
+    std::vector<bool> assigned(n, false);  // para não repetir SCCs
+
+    for (int start = 0; start < n; ++start) {
+
+        if (assigned[start]) continue;
+
+        // BFS no grafo normal
+        SearchResult fromStart = this->bfs(start);
+
+        // BFS no grafo reverso
+        SearchResult toStart = rev.bfs(start);
+
+        std::vector<int> comp;
+
+        // Interseção: vértices alcançados nos DOIS sentidos
+        for (int v = 0; v < n; ++v) {
+            if (!assigned[v] &&
+                fromStart.distance[v] >= 0 &&
+                toStart.distance[v] >= 0) {
+
+                assigned[v] = true;
+                comp.push_back(v);
+            }
+        }
+
+        components.push_back(comp);
+    }
+
+    return components;
+}
+    /**
+    std::vector<std::vector<int>> components;
     std::vector<bool> visited(n, false);
     
     for (int i = 0; i < n; ++i) {
@@ -578,7 +638,7 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
         }
     }
     return components;
-}
+     */
 
 // E para as componentes conexas
 void Graph::generateConnectedComponentsReport(const std::string& output_filename) const {
@@ -635,4 +695,5 @@ Graph Graph::reverseEdges() const {
 }
 
 }
+
 
