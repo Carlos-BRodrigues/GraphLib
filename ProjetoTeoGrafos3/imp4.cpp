@@ -303,14 +303,14 @@ SearchResult Graph::Bellman_Ford_reversed(int start_node) const{
 
 SearchResult Graph::Floyd_Warshall() const {
     int n = getVertexCount();
-    const int INF = 1e9;
+    const double INF = std::numeric_limits<double>::infinity();
     SearchResult result;
-    result.distMatrix = std::vector<std::vector<int>>(n, std::vector<int>(n, INF));
-    result.predMatrix = std::vector<std::vector<int>>(n, std::vector<int>(n, -1));
+    result.distMatrix.assign(n, std::vector<double>(n, INF));
+    result.predMatrix.assign(n, std::vector<int>(n, -1));
 
     // 2. Distância zero para cada vértice para si mesmo
      for (int i = 0; i < n; i++){
-        result.distMatrix[i][i] = 0;
+        result.distMatrix[i][i] = 0.0;
         result.predMatrix[i][i] = i;
      }
 
@@ -709,6 +709,7 @@ Graph Graph::reverseEdges() const {
 }
 
 }
+
 
 
 
