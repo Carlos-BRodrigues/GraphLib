@@ -126,8 +126,10 @@ private:
     std::unique_ptr<IGraphRepresentation> representation_;
     bool has_negative_weights_;
     bool has_weights;
+    Direction_Graph direction_type_;
 };
 
 } // namespace graph_tools_lib
 
 #endif
+
