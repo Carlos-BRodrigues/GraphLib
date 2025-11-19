@@ -41,6 +41,8 @@ struct Edge {
 struct SearchResult {
     std::vector<int> parent;
     std::vector<double> distance;
+    std::vector<std::vector<int>> distMatrix;
+    std::vector<std::vector<int>> predMatrix;
 };
 
 class IGraphRepresentation {
@@ -132,4 +134,5 @@ private:
 } // namespace graph_tools_lib
 
 #endif
+
 
