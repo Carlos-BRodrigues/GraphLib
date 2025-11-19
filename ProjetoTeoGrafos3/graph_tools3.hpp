@@ -107,6 +107,7 @@ public:
     SearchResult dijkstra(int start_node, DijkstraImplType impl_type = DijkstraImplType::HEAP) const;
     SearchResult Bellman_Ford(int end_node) const;
     SearchResult Bellman_Ford_reversed(int start_node) const;
+    SearchResult Floyd_Warshall() const;
 
     SearchResult Run_Search(int start_node) const;
 
@@ -134,5 +135,6 @@ private:
 } // namespace graph_tools_lib
 
 #endif
+
 
 
