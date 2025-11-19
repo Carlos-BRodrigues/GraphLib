@@ -301,6 +301,49 @@ SearchResult Graph::Bellman_Ford_reversed(int start_node) const{
     return result;
 }
 
+SearchResult Graph::Floyd_Warshall() const {
+    int n = getVertexCount();
+    const int INF = 1e9;
+    SearchResult result;
+    result.distMatrix = std::vector<std::vector<int>>(n, std::vector<int>(n, INF));
+    result.predMatrix = std::vector<std::vector<int>>(n, std::vector<int>(n, -1));
+
+    // 2. Distância zero para cada vértice para si mesmo
+     for (int i = 0; i < n; i++){
+        result.distMatrix[i][i] = 0;
+        result.predMatrix[i][i] = i;
+     }
+
+    // Pesos das arestas
+    for (int u = 0; u < n; u++) {
+        for (const auto& edge : representation_->getNeighbors(u)) {
+            int v = edge.target;
+            result.distMatrix[u][v] = edge.weight;
+            result.predMatrix[u][v] = u;
+        }
+    }
+
+    // Floyd–Warshall
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (result.distMatrix[i][k] < INF && result.distMatrix[k][j] < INF) {
+                    result.distMatrix[i][j] = std::min(result.distMatrix[i][j], result.distMatrix[i][k] + result.distMatrix[k][j]);
+                    result.predMatrix[i][j] = result.predMatrix[k][j];
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++){
+        if (result.distMatrix[i][i] < 0){
+            throw std::runtime_error("O grafo possui ciclos negativos");
+        }
+    }
+
+    return result;
+}
+
 
 // Função para reconstruir o caminha por meio dos pais
 std::vector<int> Graph::getPath(int target, int u) { //1 - based
@@ -666,5 +709,6 @@ Graph Graph::reverseEdges() const {
 }
 
 }
+
 
 
