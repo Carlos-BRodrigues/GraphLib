@@ -308,7 +308,7 @@ SearchResult Graph::Floyd_Warshall() const {
     result.distMatrix.assign(n, std::vector<double>(n, INF));
     result.predMatrix.assign(n, std::vector<int>(n, -1));
 
-    // 2. Distância zero para cada vértice para si mesmo
+    // Distância zero para cada vértice para si mesmo
      for (int i = 0; i < n; i++){
         result.distMatrix[i][i] = 0.0;
         result.predMatrix[i][i] = i;
@@ -344,6 +344,21 @@ SearchResult Graph::Floyd_Warshall() const {
     return result;
 }
 
+SearchResult Graph::Run_Search(int start_node) const{
+    SearchResult result;
+    int s = start_node;
+    if(!hasWeights()){
+        result = this->bfs(s);
+    }
+    if (hasNegativeWeights() && hasWeights()){
+        result = this->Bellman_Ford_reversed(s);
+    }
+    if (!hasNegativeWeights() && hasWeights()){
+        result = this->dijkstra(s);
+    }
+    return result;
+
+}
 
 // Função para reconstruir o caminha por meio dos pais
 std::vector<int> Graph::getPath(int target, int u) { //1 - based
@@ -372,22 +387,6 @@ std::vector<int> Graph::getPath(int target, int u) { //1 - based
     
     // Path contains 0-based vertices. The function returns 0-based indices.
     return path;
-}
-
-SearchResult Graph::Run_Search(int start_node) const{
-    SearchResult result;
-    int s = start_node;
-    if(!hasWeights()){
-        result = this->bfs(s);
-    }
-    if (hasNegativeWeights()){
-        result = this->Bellman_Ford_reversed(s);
-    }
-    if (!hasNegativeWeights()){
-        result = this->dijkstra(s);
-    }
-    return result;
-
 }
 
 
