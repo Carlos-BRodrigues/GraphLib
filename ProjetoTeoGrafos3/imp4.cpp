@@ -410,7 +410,7 @@ double Graph::getDiameter() const {
             SearchResult result = this->Run_Search(i); 
 
             for (double dist : result.distance) {
-                // If any distance is infinity, the graph is disconnected (diameter is undefined/infinite)
+                // If any distance is infinity, the graph is disconnected. Convention: diameter = -1
                 if (dist == std::numeric_limits<double>::infinity()) {
                     return -1.0;
                 }
@@ -431,7 +431,7 @@ double Graph::getApproximateDiameter() const {
     int n = getVertexCount();
     if (n < 2) return 0.0;
 
-    // Search from an arbitrary starting node (0)
+    // arbitrary starting node
     SearchResult res1 = this->Run_Search(0);
     
     int u = 0;
@@ -595,7 +595,7 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
     int n = getVertexCount();
     std::vector<std::vector<int>> components;
 
-    // Caso NÃO DIRECIONADO → componentes conexos normais
+    // Caso normal, não-direcionado
     if (direction_type_ == Direction_Graph::NO_Direction) {
         std::vector<bool> visited(n, false);
 
@@ -617,7 +617,7 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
         return components;
     }
 
-    // Caso DIRECIONADO → SCC usando apenas BFS (slow but correct)
+    // Caso direcionado, SCC usando apenas BFS
 
     Graph rev = reverseEdges();
     std::vector<bool> assigned(n, false);  // para não repetir SCCs
@@ -634,7 +634,7 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
 
         std::vector<int> comp;
 
-        // Interseção: vértices alcançados nos DOIS sentidos
+        // Interseção: vértices alcançados nos dois sentidos
         for (int v = 0; v < n; ++v) {
             if (!assigned[v] &&
                 fromStart.distance[v] >= 0 && 
@@ -653,7 +653,7 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
     return components;
 }
 
-// E para as componentes conexas
+// Para as componentes conexas
 void Graph::generateConnectedComponentsReport(const std::string& output_filename) const {
     auto components = getConnectedComponents();
     
@@ -699,7 +699,6 @@ Graph Graph::reverseEdges() const {
     // Para cada aresta u -> v, insere v -> u
     for (int u = 0; u < getVertexCount(); u++) {
         for (const Edge &e : representation_->getNeighbors(u)) {
-            // Insere a aresta invertida (e.target -> u) no novo grafo
             reversed.representation_->addEdge(e.target, u, e.weight);
         }
     }
@@ -708,6 +707,7 @@ Graph Graph::reverseEdges() const {
 }
 
 }
+
 
 
 
