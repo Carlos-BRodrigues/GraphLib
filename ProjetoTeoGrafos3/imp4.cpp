@@ -119,7 +119,7 @@ SearchResult Graph::bfs(int start_node) const {
         q.pop();
         for (const auto& edge : representation_->getNeighbors(u)) {
             int v = edge.target;
-            if (result.distance[v] < 0) {
+            if (result.distance[v] < 0 || result.distance[v] == std::numeric_limits<double>::infinity()) {
                 result.distance[v] = result.distance[u] + 1;
                 result.parent[v] = u;
                 q.push(v);
@@ -563,7 +563,7 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
                 std::vector<int> comp;
 
                 for (int j = 0; j < n; ++j) {
-                    if (r.distance[j] >= 0 && !visited[j]) {
+                    if (r.distance[j] >= 0 && r.distance[j] != std::numeric_limits<double>::infinity() && !visited[j]) {
                         visited[j] = true;
                         comp.push_back(j);
                     }
@@ -575,9 +575,7 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
         return components;
     }
 
-    // ---------------------------------------------------------
     // Caso DIRECIONADO → SCC usando apenas BFS (slow but correct)
-    // ---------------------------------------------------------
 
     Graph rev = reverseEdges();
     std::vector<bool> assigned(n, false);  // para não repetir SCCs
@@ -597,8 +595,10 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
         // Interseção: vértices alcançados nos DOIS sentidos
         for (int v = 0; v < n; ++v) {
             if (!assigned[v] &&
-                fromStart.distance[v] >= 0 &&
-                toStart.distance[v] >= 0) {
+                fromStart.distance[v] >= 0 && 
+                toStart.distance[v] >= 0 &&
+                fromStart.distance[v] != std::numeric_limits<double>::infinity() && 
+                toStart.distance[v] != std::numeric_limits<double>::infinity()) {
 
                 assigned[v] = true;
                 comp.push_back(v);
@@ -610,35 +610,6 @@ std::vector<std::vector<int>> Graph::getConnectedComponents() const {
 
     return components;
 }
-    /**
-    std::vector<std::vector<int>> components;
-    std::vector<bool> visited(n, false);
-    
-    for (int i = 0; i < n; ++i) {
-        if (!visited[i]) {
-            std::vector<int> current_component;
-            std::queue<int> q;
-            q.push(i);
-            visited[i] = true;
-            
-            while (!q.empty()) {
-                int u = q.front();
-                q.pop();
-                current_component.push_back(u); // Armazena 0-based
-                
-                for (const auto& edge : representation_->getNeighbors(u)) {
-                    auto v = edge.target;
-                    if (!visited[v]) {
-                        visited[v] = true;
-                        q.push(v);
-                    }
-                }
-            }
-            components.push_back(current_component);
-        }
-    }
-    return components;
-     */
 
 // E para as componentes conexas
 void Graph::generateConnectedComponentsReport(const std::string& output_filename) const {
